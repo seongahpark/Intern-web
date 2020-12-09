@@ -1,0 +1,60 @@
+<table class="basic">
+	<colgroup>
+		<col width="10%" />
+		<col width="50%" />
+		<col width="10%" />
+		<col width="20%" />
+		<col width="5%" />
+	</colgroup>
+	<thead>
+		<tr>
+			<th>번호</th>
+			<th>제목</th>
+			<th>작성자</th>
+			<th>작성일</th>
+			<th>조회</th>
+		</tr>
+	</thead>
+	<tbody>
+		{section name=i loop=$L2}
+		<tr>
+			<td><span class="re_a bold">이벤트</td>
+			<td class="list_tit bold"><a href="?mode=read&idx={$L2[i].idx}&pagenum={$etc.pagenum}&search_select={$etc.search_select}&keyword={$etc.enc_keyword}"><span class="title">{$L2[i].title}</span><span class="meta">작성자 : <i class="m_writer"></i> 작성일 : <i class="m_date"></i> 조회수 : <i class="m_view"></i></span></a></td>
+			<td class="writer">{$L2[i].user_name}</td>
+			<td class="date">{$L2[i].reg_date[0]}</td>
+			<td class="view">{$L2[i].hits}</td>
+		</tr>
+		{/section}
+		{section name=i loop=$L}
+		<tr>
+			<td>{$L[i].no}</td>
+			<td class="list_tit"><a href="?mode=read&idx={$L[i].idx}&pagenum={$etc.pagenum}&search_select={$etc.search_select}&keyword={$etc.enc_keyword}"><span class="title">{$L[i].title}</span><span class="meta">작성자 : <i class="m_writer"></i> 작성일 : <i class="m_date"></i> 조회수 : <i class="m_view"></i></span></a></td>
+			<td class="writer">{$L[i].user_name}</td>
+			<td class="date">{$L[i].reg_date[0]}</td>
+			<td class="mobile_td view">{$L[i].hits}</td>
+		</tr>
+		{sectionelse}
+		<tr><td colspan="5" height="30" class="tac">등록된 글이 없습니다.</td></tr>
+		{/section}
+	</tbody>
+</table>
+
+<div class="clear_div"></div>
+
+<div id="page">
+	<span>
+		{$etc.pageclick}
+	</span>
+</div>
+
+<div id="search">
+	<form action="{$smarty.server.PHP_SELF}" method="get" name="searchform" id="searchform">
+		<select name="search_select" id="search_select" class="input02 h30">
+			<option value="title"{if $etc.search_select=='title'} selected="selected"{/if}>제목</option>
+			<option value="contents"{if $etc.search_select=='contents'} selected="selected"{/if}>내용</option>
+			<option value="all"{if $etc.search_select=='all'} selected="selected"{/if}>제목+내용</option>
+		</select>
+		<input name="keyword" id="keyword" type="text" class="input" title="키워드" value="{$etc.keyword}" />
+		<input type="submit" class="btn_search_s b0" value="검색" />
+	</form>
+</div>

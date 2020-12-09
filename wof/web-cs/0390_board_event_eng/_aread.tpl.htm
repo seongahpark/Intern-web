@@ -1,0 +1,80 @@
+{literal}
+<script type="text/javascript">
+	function del() {
+		if ( confirm('정말 삭제하시겠습니까?') ) {
+			document.form1.modes.value = "delete";
+			document.form1.submit();
+		}
+	}
+</script>
+{/literal}
+
+<h3>{$etc.board_title}</h3>
+
+<div class="viewForm">
+	
+	<form method="post" id="form1" name="form1" action="{$smarty.server.PHP_SELF}">
+	<input type="hidden" name="mode" value="process">
+	<input type="hidden" name="modes" value="delete">
+	<input type="hidden" name="idx" value="{$L.idx}">
+	<input type="hidden" name="menu" value="{$etc.menu}">
+	<input type="hidden" name="tn" value="{$etc.tn}">
+	<input type="hidden" name="tab" value="{$etc.tab}">
+	<input type="hidden" name="search_select" value="{$etc.search_select}">
+	<input type="hidden" name="keyword" value="{$etc.enc_keyword}">
+	<input type="hidden" name="pagenum" value="{$etc.pagenum}">
+
+	<div class="title">
+		<h4>{$L.title}</h4>
+	</div>
+	<table class="viewTable">
+		<tbody>
+			<tr>
+				<th style="width:16%">작성자</th>
+				<td style="width:17%" class="p10">{$L.user_name}</td>
+				<th style="width:16%">작성일</th>
+				<td style="width:18%" class="p10">{$L.reg_date}</td>
+				<th style="width:16%">조회수</th>
+				<td style="width:17%" class="p10">{$L.hits}</td>
+			</tr>
+			{*
+			<tr>
+				<th>첨부파일1</th>
+				<td colspan="5" class="p10">{if $L.filename1 != ""}<a href="file_down.php?idx={$L.idx}&menu={$etc.menu}&tn={$etc.tn}">{$L.filename_real1}</a>{else}첨부파일이 없습니다.{/if}</td>
+			</tr>
+			<tr>
+				<th>첨부파일2</th>
+				<td colspan="5" class="p10">{if $L.filename2 != ""}<a href="file_down.php?idx={$L.idx}&menu={$etc.menu}&tn={$etc.tn}&no=2">{$L.filename_real2}</a>{else}첨부파일이 없습니다.{/if}</td>
+			</tr>
+			*}
+		</tbody>
+	</table>
+	<div class="boardCont">
+		<div class="boardRead">
+			<div class="boardReadCont">
+				{$L.contents}
+			</div>
+		</div>
+	</div>
+
+	</form>
+
+	<div class="fncBtn" style="padding-top:18px;padding-bottom:18px;">
+		<span class="left">
+			<input type="button" value="삭제" onclick="del();" class="btnGray hand" />
+		</span>
+
+		<input type="button" value="목록" onclick="location.href='?menu={$etc.menu}&tn={$etc.tn}&tab={$etc.tab}&mode=list&search_select={$etc.search_select}&keyword={$etc.enc_keyword}&pagenum={$etc.pagenum}'" class="btnGray hand" />
+
+		<span class="right">
+			<input type="button" value="수정" onclick="location.href='?menu={$etc.menu}&tn={$etc.tn}&tab={$etc.tab}&mode=modify&idx={$L.idx}&search_select={$etc.search_select}&keyword={$etc.enc_keyword}&pagenum={$etc.pagenum}'" class="btnGray hand" />
+		</span>
+	</div>
+
+	<div class="pageMove">
+		<ul>
+			<li class="next"> <span>이전</span> {$etc.pre_s} </li>
+			<li class="prev"> <span>다음</span> {$etc.next_s} </li>
+		</ul>
+	</div>
+</div>

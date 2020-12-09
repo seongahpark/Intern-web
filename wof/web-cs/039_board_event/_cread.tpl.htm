@@ -1,0 +1,43 @@
+<table class="view">
+	<thead>
+		<tr>
+			<th>{$L.title}</th>
+		</tr>
+	</thead>
+	<tr>
+		<td>
+			<dl class="view_con">
+				<dt>작성자 :</dt>
+				<dd class="name">{$L.user_name}</dd>
+				<dt>작성일 :</dt>
+				<dd class="date">{$L.reg_date}</dd>
+				<dt>조회 :</dt>
+				<dd>{$L.hits}</dd>
+			</dl>
+		</td>
+	</tr>
+	<!-- 20140820 : 첨부파일 추가 -->
+	<tr>
+		<td>
+			<dl class="view_con">
+				<dt style="width:70px">첨부파일 :</dt>
+				<dd class="last" style="width:calc(100% - 70px); float:right; margin:0;">
+					{if $L.filename1 != ""}<a href="/woFMasTEr/file_down.php?idx={$L.idx}&menu={$etc.menu}&tn={$etc.tn}">{$L.filename_real1}</a>{else}첨부파일이 없습니다.{/if}
+				</dd>
+			</dl>
+		</td>
+	</tr>
+	<tr>
+		<td class="substance">
+			{$L.contents}
+		</td>
+	</tr>
+</table>
+<div id="contents"></div>
+<!--
+<div class="right pt_20">
+	<a href="?mode=list&pagenum={$etc.pagenum}&search_select={$etc.search_select}&keyword={$etc.enc_keyword}" class="btn_on" title="목록">목록</a>
+</div>
+
+<div class="clear_div"></div>
+-->

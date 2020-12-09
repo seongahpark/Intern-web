@@ -1,0 +1,899 @@
+<style>
+	
+</style>
+
+
+{literal}
+<script type="text/javascript">
+// 20140829 : 영문알림 문구변경
+function writeform_chk(obj)
+{
+	if($("#user_id").val()=='')
+	{
+		alert('Please enter your Email(ID).');
+		$("#user_id").focus();
+		return false;
+	}
+	if(!valid_email($("#user_id").val()))
+	{
+		alert('Failed: Incorrect email address(ID) entered.');
+		//$('#user_id').focus();
+		return false;
+	}
+
+	id_chk_obj=$('input#id_chk_flag');
+	if(id_chk_obj.val()=='0')
+	{
+		alert('The email address(ID) entered was invalid.');
+		$('input#user_id').focus();
+		return false;
+	}
+	if($("#password").val()=='' && $("#modes").val()=='write')
+	{
+		alert('Please enter your password.');
+		$("#password").focus();
+		return false;
+	}
+	if($("#password").val().length<4 && $("#modes").val()=='write')
+	{
+		alert('Passwords must be at least four (4) characters long.');
+		$("#password").focus();
+		return false;
+	}
+	if($("#password").val().length<4 && $("#password").val()!='')
+	{
+		alert('Passwords must be at least four (4) characters long.');
+		$("#password").focus();
+		return false;
+	}
+	if($("#password2").val()=='' && $("#modes").val()=='write')
+	{
+		alert('Please confirm your password.');
+		$("#password2").focus();
+		return false;
+	}
+	if($("#password").val()!=$("#password2").val())
+	{
+		alert('Failed: Incorrect password entered.');
+		$('#password').focus();
+		return false;
+	}
+	/*if($("#password").val())
+	{
+		if(!CheckPassword($("#password").val(), $("#password")))
+		{
+			return false;
+		}
+	}
+*/
+	//if($("input[name=appellation]:radio:checked").length==0)
+	//{
+	//	alert('Please select your title.');
+	//	return false;
+	//}
+
+	//if($("#user_name1").val()=='')
+	//{
+		//alert('이름(성)을 입력하세요.');
+		//$("#user_name1").focus();
+		//return false;
+	//}
+
+	//if($("#user_name2").val()=='')
+	//{
+		//alert('이름(이름)을 입력하세요.');
+		//$("#user_name2").focus();
+		//return false;
+	//}
+
+	if($("#eng_user_name1").val()=='')
+	{
+		alert('Please enter your Last Name.');
+		$("#eng_user_name1").focus();
+		return false;
+	}
+
+	if($("#eng_user_name2").val()=='')
+	{
+		alert('Please enter your First Name.');
+		$("#eng_user_name2").focus();
+		return false;
+	}
+
+	//if($("#belong").val()=='')
+	//{
+		//alert('소속(국문)을 입력하세요.');
+		//$("#belong").focus();
+		//return false;
+	//}
+
+	if($("#eng_belong").val()=='')
+	{
+		alert('Please enter your organization\'s name.');
+		$("#eng_belong").focus();
+		return false;
+	}
+
+	//if($("#position").val()=='')
+	//{
+		//alert('직책(국문)을 입력하세요.');
+		//$("#position").focus();
+		//return false;
+	//}
+
+	if($("#eng_position").val()=='')
+	{
+		alert('Please enter a job title.');
+		$("#eng_position").focus();
+		return false;
+	}
+
+	if($("#nationality").val()=='')
+	{
+		alert('Please select your nationality.');
+		$("#nationality").focus();
+		return false;
+	}
+
+	if($("#residence").val()=='')
+	{
+		alert('Please select the country of your residence.');
+		$("#residence").focus();
+		return false;
+	}
+
+	//if($('#tel1').val()=='')
+	//{
+		//alert($('#tel1').attr('title')+'를 선택하세요.');
+		//$('#tel1').focus();
+		//return false;
+	//}
+	//if($('#tel2').val()=='')
+	//{
+		//alert($('#tel2').attr('title')+'를 입력하세요.');
+		//$('#tel2').focus();
+		//return false;
+	//}
+	//if($('#tel3').val()=='')
+	//{
+		//alert($('#tel3').attr('title')+'를 입력하세요.');
+		//$('#tel3').focus();
+		//return false;
+	//}
+	//if($('#mobile1').val()=='')
+	//{
+		//alert($('#mobile1').attr('title')+'를 선택하세요.');
+		//$('#mobile1').focus();
+		//return false;
+	//}
+	//if($('#mobile2').val()=='')
+	//{
+		//alert($('#mobile2').attr('title')+'를 입력하세요.');
+		//$('#mobile2').focus();
+		//return false;
+	//}
+	//if($('#mobile3').val()=='')
+	//{
+		//alert($('#mobile3').attr('title')+'를 입력하세요.');
+		//$('#mobile3').focus();
+		//return false;
+	//}
+
+	if(!$("#agree1").is(':checked'))
+	{
+		alert('You must accept terms and conditions first.');
+		return false;
+	}
+
+	if(!$("#agree2").is(':checked'))
+	{
+		alert('You must accept terms and conditions in personal information first.');
+		return false;
+	}
+
+	return true;
+}
+
+function id_chk(obj)
+{
+	if($("#user_id").val()=='')
+	{
+		alert('Please enter your Email(ID).');
+		$("#id_chk_flag").val('0');
+		return false;
+	}
+
+	if(!valid_email($("#user_id").val()))
+	{
+		alert('Failed: Incorrect email address(ID) entered.');
+		$("#id_chk_flag").val('0');
+		return false;
+	}
+
+	var chk;
+	$.ajax({
+		url: '/eng/share/member_ajax.php',
+		type: "GET",
+		data: "mode=id_chk&user_id="+obj.value,
+		datatype: "html",
+		success: function(data){
+			chk=data.split('|');
+			$('input#id_chk_flag').val(chk[0]);
+			$('span#id_span').html(chk[1]);
+		},
+		error: function(){
+			alert("Data load failed.");
+		}
+	});
+}
+
+/* 20190903 체크박스 전체선택, 전체해제 */
+function checkAll(n){
+      if( $("#interestAll").is(':checked') ){
+		for(i=1; i<=n; i++){
+			$("input[name=interest"+i+"]").prop("checked", true);
+			j=i+1;
+			$("input[name=interest"+j+"]").attr('disabled', true);
+		}
+      }else{
+		for(i=1; i<=n; i++){
+			$("input[name=interest"+i+"]").prop("checked", false);
+			j=i+1;
+			$("input[name=interest"+j+"]").attr('disabled', false);
+		}
+      }
+}
+
+
+/*
+* 20200513 체크박스 선택풀기
+* 파라미터 : 체크풀고싶은 체크박스 name
+* 각 체크박스에 함수 적용해야합니다
+*/
+function unChk(chkFalse){
+	$("input[name="+chkFalse+"]").prop("checked", false);
+}
+
+
+</script>
+{/literal}
+
+
+<div id="online_w">
+	<div class="online_box">
+		<div class="title">Registration for Participants</div>
+	* Please fill out the blanks below. Fields marked should be completed.
+	</div>
+</div>
+
+
+<div class="pt_30"></div>
+
+<form name="writeform" method="post" action="{$smarty.server.PHP_SELF}" enctype="multipart/form-data" onsubmit="return writeform_chk(this);">
+	<input type="hidden" name="idx" value="{$L.idx}" />
+	<input type="hidden" id="mode" name="mode" value="process" />
+	<input type="hidden" id="modes" name="modes" value="{$etc.modes}" />
+	<input type="hidden" id="id_chk_flag" name="id_chk_flag" value="{if $etc.mode=='write'}0{else}1{/if}" />
+
+	<table class="t3">
+		<colgroup>
+			<col width="25%">
+			<col width="">
+		</colgroup>
+		<tr>
+			<th>* E-mail(ID)</th>
+			<td>
+				<input type="text" id="user_id" name="user_id" value="{$L.user_id}" title="E-mail(ID)" class="input02" style="ime-mode:disabled" size="30" onblur="id_chk(this);"{if $etc.mode=='modify'} disabled="disabled"{/if} />
+				<span id="id_span"></span>
+			</td>
+		</tr>
+		<tr>
+			<th>* Password</th>
+			<td>
+				<input type="password" id="password" name="password" value="" title="Password" maxlength="20" class="input02" size="30" />{if $etc.mode=='modify'}&nbsp;&nbsp;* 비밀번호 변경시에만 입력하세요.{/if}
+				<br />
+				Minimum of 4 characters in length	
+			</td>
+		</tr>
+		<tr>
+			<th>* Password Confirmation</th>
+			<td>
+				<input type="password" id="password2" name="password2" value="" class="input02" size="30" title="Confirmation" maxlength="20" class="" />{if $etc.mode=='modify'}&nbsp;&nbsp;* 비밀번호 변경시에만 입력하세요.{/if}
+			
+				
+			</td>
+		</tr>
+		<tr>
+			<th>* Nationality</th>
+			<td>
+				<select id="nationality" name="nationality" class="input02 h30">
+					<option value="">Select your Nationality</option>
+					{section name=i loop=$K}
+					<option value="{$K[i].c_name}" title="{$K[i].c_name}" {if $K[i].c_name=='RepublicofKorea'} selected{/if} >{$K[i].c_name}</option>
+					{/section}
+				</select>
+			</td>
+		</tr>
+		<!-- tr>
+			<th>* Title</th>
+			<td>
+				<input type="radio" id="appellation4" name="appellation" value="40" class="radio_01" /><label for="appellation4" class="pr_20">Prof.</label>
+				<input type="radio" id="appellation3" name="appellation" value="30" class="radio_01" /><label for="appellation3" class="pr_20">Dr.</label>
+				<input type="radio" id="appellation1" name="appellation" value="10" class="radio_01" /><label for="appellation1" class="pr_20">Mr.</label>
+				<input type="radio" id="appellation2" name="appellation" value="20" class="radio_01" /><label for="appellation2" class="pr_20">Ms.</label>
+				<input type="radio" id="appellation5" name="appellation" value="50" class="radio_01" /><label for="appellation5" class="pr_20">Ph. D.</label>
+				<input type="radio" id="appellation6" name="appellation" value="60" class="radio_01" /><label for="appellation6">student</label>
+				<input type="radio" id="appellation7" name="appellation" value="70" class="radio_01" /><label for="appellation7">Others <input type="text" id="etcVal" name="etcVal" size="10" class="input02" /></label>
+
+			</td>
+		</tr -->
+		<!-- <tr>
+			<th>Name</th>
+			<td>
+				Last name <input type="text" id="user_name1" name="user_name1" title="Last name" class="input02" size="15" value="{$L.user_name1}" />
+				<span class="pl_20">First name</span> <input type="text" id="user_name2" name="user_name2" title="First name" class="input02" size="15" value="{$L.user_name2}" />
+			</td>
+		</tr> -->
+<input type="hidden" id="user_name1" name="user_name1" title="Last name" class="input02" size="15" value="{$L.user_name1}" />
+ <input type="hidden" id="user_name2" name="user_name2" title="First name" class="input02" size="15" value="{$L.user_name2}" />
+		<tr>
+			<th>* Name(English)</th>
+			<td>
+				First name <input type="text" id="eng_user_name2" name="eng_user_name2" title="First name" class="input02" size="15" value="{$L.eng_user_name2}"/>
+				<span class="pl_20">Last name</span>  <input type="text" id="eng_user_name1" name="eng_user_name1" title="Last name" class="input02" size="15" value="{$L.eng_user_name1}"/>
+			</td>
+		</tr>
+		<tr>
+			<th>* Gender</th>
+			<td>
+				<input type="radio" id="sex1" name="sex" value="m" class="radio_01" checked/><label for="sex1" class="pr_20">Male</label>
+				<input type="radio" id="sex2" name="sex" value="f" class="radio_01" /><label for="sex2" class="pr_20">Female</label>
+				
+
+			</td>
+		</tr>
+		<tr>
+			<th>* Affiliation</th>
+			<td>
+				<!-- Korean <input type="text" id="belong" name="belong" value="{$L.belong}" class="input02" size="25" /> -->
+				<!-- <span class="pl_20">English</span>  --><input type="text" id="eng_belong" name="eng_belong" class="input02" value="{$L.eng_belong}" size="25" />
+			</td>
+			<input type = "hidden" name = "national" value = "f">
+		</tr>
+		<tr>
+			<th>* Position</th>
+			<td>
+				<!-- Korean <input type="text" id="position" name="position" class="input02" value="{$L.position}" size="15" /> -->
+				<!-- <span class="pl_20">English</span> --> <input type="text" id="eng_position" name="eng_position" class="input02" value="{$L.eng_position}" size="15" />
+			</td>
+		</tr>
+		
+		<!--tr>
+			<th>Country of Residence</th>
+			<td>
+				<select id="residence" name="residence" class="input02 h30">
+					<option value="">Select your country of residence</option>
+					{section name=i loop=$K}
+					<option value="{$K[i].c_name}" title="{$K[i].c_name}" {if $K[i].c_name=='RepublicofKorea'} selected{/if} >{$K[i].c_name}</option>
+					{/section}
+				</select>
+			</td>
+		</tr>
+		<tr-->
+
+		<tr>
+			<th>* Country Code + Mobile Phone</th>
+			<td>
+				<select id="country_code" name="country_code" class="input02" title="Country code" >
+<option value="82">Korea</option>
+<option value="233">Ghana</option>
+<option value="241">Gabon</option>
+<option value="220">Gambia</option>
+<option value="502">GUATEMALA</option>
+<option value="1671">Guam</option>
+<option value="1473">Grenada</option>
+<option value="995">Georgia</option>
+<option value="30">Greece</option>
+<option value="299">Greenland</option>
+<option value="224">Guinea</option>
+<option value="264">Namibia</option>
+<option value="234">Nigeria</option>
+<option value="27">South Africa</option>
+<option value="31">Netherlands</option>
+<option value="977">Nepal</option>
+<option value="47">Norway</option>
+<option value="64">New Zealand</option>
+<option value="687">New Caledonia</option>
+<option value="227">Niger</option>
+<option value="886">Taiwan</option>
+<option value="45">Denmark</option>
+<option value="1747">Dominica</option>
+<option value="1809">Dominican Rep</option>
+<option value="49">Germany</option>
+<option value="856">Laos</option>
+<option value="231">Liberia</option>
+<option value="371">Latvia</option>
+<option value="7">Russia</option>
+<option value="961">Lebanon</option>
+<option value="266">Lesotho</option>
+<option value="40">Romania</option>
+<option value="352">Luxemburg</option>
+<option value="250">Rwanda</option>
+<option value="262">Reunion</option>
+<option value="370">Lithuania</option>
+<option value="423">Liechtenstein</option>
+<option value="261">Madagascar</option>
+<option value="269">Mayotte</option>
+<option value="853">Macau</option>
+<option value="389">Macedonia</option>
+<option value="265">Malawi</option>
+<option value="60">Malaysia</option>
+<option value="223">Mali</option>
+<option value="356">Malta</option>
+<option value="52">Mexico</option>
+<option value="377">Monaco</option>
+<option value="212">Morocco</option>
+<option value="230">Mauritius</option>
+<option value="222">Mauritania</option>
+<option value="258">Mozambique</option>
+<option value="1664">Monteserrat</option>
+<option value="373">Moldova</option>
+<option value="960">Maldives</option>
+<option value="976">Mongolia</option>
+<option value="1">USA</option>
+<option value="95">Myanmar</option>
+<option value="678">Vanuatu</option>
+<option value="973">Bahrein</option>
+<option value="1246">Barbados</option>
+<option value="1242">Bahamas</option>
+<option value="880">Bangladesh</option>
+<option value="1441">Bermuda</option>
+<option value="1">Virgin IS.(U.S.A)</option>
+<option value="1284">Virgin IS.(BRI.)</option>
+<option value="58">Venezuela</option>
+<option value="229">Benin</option>
+<option value="84">Vietnam</option>
+<option value="32">Belgium</option>
+<option value="375">Belarus</option>
+<option value="387">Boznia Herzegovina</option>
+<option value="267">Bostwana</option>
+<option value="591">Bolivia</option>
+<option value="257">Burundi</option>
+<option value="673">Brunei</option>
+<option value="226">Burkina Faso</option>
+<option value="359">Bulgaria</option>
+<option value="55">Brazil</option>
+<option value="966">Saudi Arabia</option>
+<option value="1670">Saipan</option>
+<option value="221">Senegal</option>
+<option value="1758">St. Lucia</option>
+<option value="1809">St. Vincent</option>
+<option value="1869">St. Kitts</option>
+<option value="249">Sudan</option>
+<option value="94">Sri Lanka</option>
+<option value="268">Swaziland</option>
+<option value="46">Sweden</option>
+<option value="41">Switzerland</option>
+<option value="34">Spain</option>
+<option value="421">Slovakia</option>
+<option value="386">Slovenia</option>
+<option value="963">Syria</option>
+<option value="232">Sierra Leone</option>
+<option value="248">Seychelles</option>
+<option value="65">Singapore</option>
+<option value="357">Cyprus</option>
+<option value="971">U.A.E.</option>
+<option value="297">Aruba</option>
+<option value="54">Argentina</option>
+<option value="374">Armenia</option>
+<option value="225">Ivory Coast</option>
+<option value="354">Iceland</option>
+<option value="353">Ireland</option>
+<option value="994">Azerbaijan</option>
+<option value="93">Afganistan</option>
+<option value="1264">Anguilla</option>
+<option value="376">Andorra</option>
+<option value="1268">Antigua</option>
+<option value="1268">Antigua Barbuda</option>
+<option value="1907">Alaska</option>
+<option value="355">Albania</option>
+<option value="213">Algeria</option>
+<option value="372">Estonia</option>
+<option value="593">equador</option>
+<option value="240">Equatorial Guinea</option>
+<option value="251">Ethiopia</option>
+<option value="503">El Salvador</option>
+<option value="44">UK</option>
+<option value="967">Yemen</option>
+<option value="968">Oman</option>
+<option value="61">Australia</option>
+<option value="43">Austria</option>
+<option value="962">Jordan</option>
+<option value="256">Uganda</option>
+<option value="998">Uzbekistan</option>
+<option value="380">Ukrainia</option>
+<option value="381">Yugoslavia</option>
+<option value="964">Iraq</option>
+<option value="98">Iran</option>
+<option value="972">Israel</option>
+<option value="20">Egypt</option>
+<option value="39">Italy</option>
+<option value="91">India</option>
+<option value="62">Indonesia</option>
+<option value="81">Japan</option>
+<option value="1876">Jamaica</option>
+<option value="260">Zambia</option>
+<option value="995">Georgia</option>
+<option value="86">china</option>
+<option value="236">Central African Republic</option>
+<option value="350">Gibraltar</option>
+<option value="263">Zimbabwe</option>
+<option value="235">Tchad</option>
+<option value="420">Czek Republic</option>
+<option value="56">Chile</option>
+<option value="237">Cameroon</option>
+<option value="1345">Cayman IS.</option>
+<option value="7">Kazakhstan</option>
+<option value="855">Cambodia</option>
+<option value="1">Canada</option>
+<option value="254">Kenya</option>
+<option value="238">Cape Verde</option>
+<option value="242">Congo</option>
+<option value="243">Congo(Dem Rep)</option>
+<option value="974">Quatar</option>
+<option value="53">Cuba</option>
+<option value="965">Kuwait</option>
+<option value="385">Croatia</option>
+<option value="996">Kyrgyz Republic</option>
+<option value="992">Tajikistan</option>
+<option value="255">Tanzania</option>
+<option value="66">Thailand</option>
+<option value="90">Turkey</option>
+<option value="1649">Turks Caicos</option>
+<option value="228">Togo</option>
+<option value="993">Turkmenistan</option>
+<option value="216">Tunisia</option>
+<option value="1868">Trinidad Tobago</option>
+<option value="670">Timor</option>
+<option value="507">Panama</option>
+<option value="595">Paraguay</option>
+<option value="298">Faroe Islands</option>
+<option value="92">Pakistan</option>
+<option value="680">palau</option>
+<option value="970">Palestein</option>
+<option value="51">Peru</option>
+<option value="351">Portugal</option>
+<option value="48">Poland</option>
+<option value="1787">Puerto Rico</option>
+<option value="33">France</option>
+<option value="590">French West Indies 1</option>
+<option value="594">French West Indies 2</option>
+<option value="596">French West Indies 3</option>
+<option value="689">French Polynesia</option>
+<option value="679">Fiji</option>
+<option value="358">Finland</option>
+<option value="63">Philippines</option>
+<option value="1808">HAWAII</option>
+<option value="36">Hungaria</option>
+<option value="852">Hong-Kong</option>
+				</select>
+				<!-- <select id="mobile1" name="mobile1" class="input02 h30" title="Mobile Phone">
+					<option value="010">010</option>
+					<option value="011">011</option>
+					<option value="016">016</option>
+					<option value="017">017</option>
+					<option value="018">018</option>
+					<option value="019">019</option>
+				</select>
+				-
+				<input type="text" id="mobile2" name="mobile2" maxlength="4" size="6" class="input02" title="Mobile Phone" value="{$L.mobile[1]}" />
+				- -->
+				<input type="text" id="mobile3" name="mobile3" maxlength="30" size="20" class="input02" title="Mobile Phone" value="{$L.mobile}" />
+				{if $etc.mode=='modify'}
+				{literal}
+				<script type="text/javascript">
+					$("#mobile1").val('{/literal}{$L.mobile[0]}{literal}');
+				</script>
+				{/literal}
+				{/if}
+			</td>
+		</tr>
+		<!-- tr>
+			<th>Telephone</th>
+			<td>
+				<select id="tel1" name="tel1" class="input02 h30" title="Telephone">
+					<option value="02">02</option>
+					<option value="031">031</option>
+					<option value="032">032</option>
+					<option value="033">033</option>
+					<option value="041">041</option>
+					<option value="042">042</option>
+					<option value="043">043</option>
+					<option value="044">044</option>
+					<option value="051">051</option>
+					<option value="052">052</option>
+					<option value="053">053</option>
+					<option value="054">054</option>
+					<option value="055">055</option>
+					<option value="061">061</option>
+					<option value="062">062</option>
+					<option value="063">063</option>
+					<option value="064">064</option>
+					<option value="070">070</option>
+					<option value="080">080</option>
+				</select>
+				-
+				<input type="text" id="tel2" name="tel2" maxlength="4" size="6" class="input02" title="Telephone" value="{$L.tel[1]}" />
+				-
+				<input type="text" id="tel3" name="tel3" maxlength="30" size="20" class="input02" title="Telephone" value="{$L.tel}">
+				{if $etc.mode=='modify'}
+				{literal}
+				<script type="text/javascript">
+					$("#tel1").val('{/literal}{$L.tel[0]}{literal}');
+				</script>
+				{/literal}
+				{/if}
+			</td>
+		</tr -->
+		
+
+
+
+		<!---------------------------------------------------------------- [2020-10-21] 2020년 가입신청만 이부분 주석 : 2021년 신청부터는 _ceng_write.tpl_201021.htm 이파일로 쓰시면 됩니다.
+		<tr>
+			<th class="m_br">* Occupational <br>Category 1</th>
+			<td>
+				<select id="jobkind" name="jobkind" class="input02 h30" title="직업종류">
+					<option value="1">Government / Public organization</option>
+					<option value="2">Company</option>
+					<option value="3">Academic / Research institution</option>
+					<option value="4">Student</option>
+					<option value="5">Other</option>
+				</select>
+			</td>
+		</tr>
+
+		<tr>
+			<th class="m_br">* Occupational <br>Category 2</th>
+			<td>
+				Is it related to the ocean industry? 
+				<input type="radio" id="jobkind2" name="jobkind2" value="y" class="radio_01" checked /><label for="jobkind2" class="pr_20">Yes</label>
+				<input type="radio" id="jobkind3" name="jobkind2" value="n" class="radio_01" /><label for="jobkind3" class="pr_20">No</label>
+			</td>
+		</tr>
+
+		<tr>
+			<th>* Place of Residence</th>
+			<td>
+				<input type="text" id="region" name="region" class="input02" value="{$L.region}" size="15" />
+			</td>
+		</tr>
+
+		<tr>
+			<th class="m_br">Program<br>(Select all that apply)</th>
+			<td>
+				<div class="pgr-table">
+					<div class="pgr-group group01">
+						<div class="date-tit first">10.27(Tue)</div>
+						<div class="grp-box check-grp">
+							<div class="time">15:30 ~ 17:30</div>
+							<div class="check-box full"><input type="checkbox" name="interest1" value="Y" id="interest1"><label for="interest1">Ceremony & [Keynote Session] </label></div>
+						</div>
+						<div class="date-tit">10.28(Wed)</div>
+						<div class="grp-box check-grp">
+							<div class="time height_01">10:00 ~ 12:00</div>
+							<div class="check-box full">
+								<div>
+									<input type="checkbox" name="interest2" value="Y" id="interest2" onclick="unChk('interest3');"><label for="interest2">[Main Session 1] Fisheries</label>
+								</div>
+								<div>
+									<input type="checkbox" name="interest3" value="Y" id="interest3" onclick="unChk('interest2');"><label for="interest3">[Special Session 1] Marine City Network</label>
+								</div>
+							</div>							
+						</div>
+						<div class="grp-box check-grp">
+							<div class="time height_01">13:30 ~ 16:30</div>
+							<div class="check-box full">
+								<div>
+									<input type="checkbox" name="interest4" value="Y" id="interest4" onclick="unChk('interest5');"><label for="interest4">[Main Session 2] Marine Environment</label>
+								</div>
+								<div>
+									<input type="checkbox" name="interest5" value="Y" id="interest5" onclick="unChk('interest4');"><label for="interest5">[Special Session 2] Marine Fisheries ODA</label>
+								</div>
+							</div>							
+						</div>
+						
+						<div class="date-tit">10.29(Thu)</div>
+						<div class="grp-box check-grp">
+							<div class="time height_01">10:00 ~ 12:00</div>
+							<div class="check-box full">
+							<div>
+								<input type="checkbox" name="interest6" value="Y" id="interest6" onclick="unChk('interest7');"><label for="interest6">[Main Session 3] Shipbuilding</label>
+							</div>
+							<div>
+								<input type="checkbox" name="interest7" value="Y" id="interest7" onclick="unChk('interest6');"><label for="interest7">[Special Session 3] Marine Humanities</label>
+							</div>
+							</div>
+						</div>
+						<div class="grp-box check-grp">
+							<div class="time height_01">13:30 ~ 16:30</div>
+							<div class="check-box full">
+							<div>
+								<input type="checkbox" name="interest8" value="Y" id="interest8" onclick="unChk('interest9');"><label for="interest8">[Main Session 4] Marine Transport·Finance</label>
+							</div>
+							<div>
+								<input type="checkbox" name="interest9" value="Y" id="interest9" onclick="unChk('interest8');"><label for="interest9">[Special Session 4] The 5th Ocean Start-Up</label>
+							</div>
+							</div>				
+						</div>
+						<div class="grp-box check-grp">
+							<div class="time">16:30 ~ 17:30</div>
+							<div class="check-box full"><input type="checkbox" name="interest10" value="Y" id="interest10"><label for="interest10">[Epilogue Session]</label></div>
+						</div>
+				</div>
+
+
+
+		</tr>
+
+		<tr>
+			<th class="m_br">Route of Recognition<br>(Select all that apply) </th>
+			<td>
+			    <div class="chapter">
+			        <ul>
+                        <li><input type="checkbox" name="roots1" value="Y" id="roots1"><label for="roots1">Invitation letter / Leaflet</label></li>
+                        <li><input type="checkbox" name="roots2" value="Y" id="roots2"><label for="roots2">Newspaper / Marine magazine</label></li>
+                        <li><input type="checkbox" name="roots3" value="Y" id="roots3"><label for="roots3">Advertisement (TV, Radio)</label></li>
+                        <li><input type="checkbox" name="roots4" value="Y" id="roots4"><label for="roots4">Information on the Internet</label></li>
+                        <li><input type="checkbox" name="roots5" value="Y" id="roots5"><label for="roots5">E-mail (Newsletter)</label></li>
+						<li><input type="checkbox" name="roots5" value="Y" id="roots5"><label for="roots6">Social Media (YouTube, Facebook, Instagram, etc.)</label></li>
+						<li><input type="checkbox" name="roots5" value="Y" id="roots5"><label for="roots7">Outdoor Placard / Banner</label></li>
+                        <li><input type="checkbox" name="roots6" value="Y" id="roots6"><label for="roots8">Other</label> <input type="text" id="etcVal2" name="etcVal2" size="20" class="input02" /></li>
+			        </ul>
+			    </div>
+			</td>
+		</tr>
+
+		<tr>
+			<th class="m_br">Purpose of Visit<br>(Select all that apply) </th>
+			<td>
+			    <div class="chapter">
+                    <ul>
+                        <li><input type="checkbox" name="object1" id="object1" value="Y" ><label for="object1">For the collecting of information</label></li>
+                        <li><input type="checkbox" name="object2" id="object2" value="Y" ><label for="object2">To see preferred speaker's presentation</label></li>
+                        <li><input type="checkbox" name="object3" id="object3" value="Y" ><label for="object3">Interested in topics and contents</label></li>
+                        <li><input type="checkbox" name="object4" id="object4" value="Y" ><label for="object4">For networking with people in relevant fields</label></li>
+                        <li><input type="checkbox" name="object5" id="object5" value="Y" ><label for="object5">Recommended by an acquaintance</label></li>
+                        <li><input type="checkbox" name="object6" id="object6" value="Y" ><label for="object6">Other</label> <input type="text" id="etcVal3" name="etcVal3" size="20" class="input02" /></li>
+                    </ul>
+                </div>
+			</td>
+		</tr>
+
+		--------------------------------------------------------------------------------->
+
+	</table>
+
+
+	<div class="pt_30"></div>
+
+	<h1>Use Agreement</h1>
+	<div class="pt_10 pl_20"></div>
+	<textarea cols="100%" rows="5" class="textarea_01">
+Article 1 Purpose
+ The purpose of this World Ocean Forum Use Agreement (hereafter “this Agreement”) is to set out the rights, obligations, responsibilities, terms of use, usage procedures and other fundamental matters between the User and World Ocean Forum (hereafter “Forum”) in connection with the use of services provided by the Forum. 
+
+ Article 2 User
+ The ‘User’ means an individual who signed up as a member of World Ocean Forum by accessing the website of the Forum and consented to the terms of this Agreement. 
+
+ Article 3 Effectiveness and Amendment
+ ① This Agreement shall take effect for all users as posted on Forum website. ② The Forum may amend this Agreement if it deems it to be necessary and amended Agreement shall take effect for all users in accordance with subsection (1) of this article. ③ Any User who does not agree to the amended Agreement may withdrawal from this service. The User who continues to use services by the effective date shall be deemed to have consented to the amendment. 
+
+ Article 4 Sing Up
+ ① This Use Agreement shall become effective when any person who wishes to be a user consents to the terms of this Agreement and submits an application (application form can be found on website). ② The person who wishes to be a user of this Forum shall provide its own personal information as requested. 
+
+ Article 5 Restrictions on Use of Service
+ The Forum may not approve such application submitted under the any of following events: 
+ 1. When the applicant provides false name 
+ 2. When the applicant uses another person (or company)’s name for application 
+ 3. When any information to be filled out by the applicant is falsely entered or omitted or erroneously indicated 
+ 4. When the applicant submits application to disturb a social order and the public good.
+
+
+ Article 6 Membership
+ The membership of Forum website service consists of: 
+ 1. General Participant
+ 2. Speaker 
+
+ Article 7 Withdrawal and Termination
+ ① The User can withdraw its membership at any time through submitting on/off line application. 
+ ② The Forum may terminate or suspend user’s membership without any prior notification if the User engages in any of following activities: 
+ 1. Misappropriating or illegally using another User’s ID and Password
+ 2. Acquiring membership under the false/or another person’s name 
+ 3. Interrupting the Forum’s operation 
+ 4. Dual registration by single person 
+ 5. Disseminating information, sentences, diagrams or sounds that disturb social order or the public good 
+ 6. Defaming or committing any offensive action against the third party, or any illegal behavior such as infringing on the intellectual property rights 
+ 7. Transmitting, posting or commercializing information other than that designated without prior consent from the Forum 
+ 8. Any other illegal or unreasonable behavior 
+
+ Article 8 Intellectual Property
+ ① The User shall not be allowed to post, copy or sell any information without prior approval from the Forum or legal authority, and also the User shall not post/publish any contents with changing name of author. 
+ ② The Forum shall not be liable for any damage caused by infringing above subsection (1). 
+
+ Article 9 Obligation of Forum
+ ① The Forum has an obligation to provide consistent and stable services to the User.
+ ② When any User files a reasonable complaint with the Forum in connection with the service, the Forum shall promptly handle the complaint. If it is difficult to promptly handle the complaint, the Forum shall notify the User of the reasons and the schedule for handling the complaint. 
+ ③ The Forum shall maintain confidentiality of personal information of the User, and it may use personal information of the User only in connection with its normal service operation or service improvement activities. Also, it shall not transfer any personal information of the User to the third party. 
+
+ Article 10 Obligation of User
+ ① The User shall be fully responsible for management of ID and Password and/or use of them by third party. 
+ ② The User shall notify any unauthorized use of his/her ID to Forum. 
+ ③ The User shall comply with this Agreement and all related Law/Act, and it shall not disturb normal operation of Forum. 
+
+
+ Article 11 Limitation from Liability
+ ① The User has right to use any posted contents deliberately and freely. Also, the Forum shall not liable for any damage or loss resulting from the use of the service or arising from any materials obtained by the User through the service. 
+ ② The Forum shall not liable for any loss resulting from suspension of service or any other grounds. 
+
+
+	</textarea>
+	<div class="check"><input type="checkbox" id="agree1" name="agree1" class="middle" /><label for="agree1"> I Agree</label></div>
+
+	<div class="pt_30"></div>
+
+	<h1>Privacy Policy</h1>
+	<div class="pt_10 pl_20"></div>
+	<textarea cols="100%" rows="5" class="textarea_01">
+The WOF thoroughly values protecting user’s personal information and uses its best efforts to prevent your personal information from being lost, damaged or disclosed. This Privacy Policy is subject to changes according to the laws of the Republic of Korea and the policy of WOF. User can review the most current version of the Privacy Policy at any time. 
+
+The WOF services observe the Privacy Policy Guideline provided by Ministry of Information and Communication and Privacy Protection Regulations under the Communication Privacy Protection Act, Telecommunication Business Act and Promotion of Information and Communications Network Use and Information Protection Act. 
+Through the Privacy Policy, the user is notified the purpose and method of use of personal information, and imposed protective measurement. In accordance with Subsection (1) of Article 22, Subsection (1) of Article 24 and Subsection (1) of Article 25 of Information and Communications Network Act, the Company notifies the purpose and method of use of personal information, and imposed protective measurement for obtaining user’s consent and the user may select ‘Agree’ or ‘Disagree’ accordingly. 
+
+1. Purpose of Collecting and Usage of Personal Information
+“Personal information” means an information concerning a living person by which the relevant person may be identified on the basis of his/her name, resident registration number, etc. contained in the information (including the information, if used alone, could not be used to distinguish one individual from the others, but which information could be easily combined with other information to distinguish one individual from the others). 
+
+Most of services provided by WOF can be used without any user registration. However, the Company collects personal information only for quality and customized services. The personal information of user shall not be disclosed without prior consent from user itself, and collected personal information is used as follow:
+
+Firstly, the Company may develop more useful service with personal information provided by the user. The Company may efficiently set priorities for development of services when it develops new service or expands its contents, and the Company may reasonably select and provide user’s personal information for those purposes.
+
+Secondly, the items and their purposes of collecting and usage of personal information are as follows: 
+-Name, ID, password, resident registration number: To verify identification
+-e-mail address, telephone number: To provide new information and notifications, to process complaints from using the service, to update the services and service-related instructions 
+-Bank account information, credit card information: Provision of payment settlement service and optional services
+-Address, telephone number: To deliver and bill the goods
+-Other optional items: To provide customized service 
+-IP Address: To prevent wrongful and/or unauthorized use by illegitimate members
+
+
+2. Categories of Personal Information to Be Collected and Method of Collecting Personal Information
+For the services, the Company collects personal information at mandatory fields including name, resident registration number and e-mail address when user signs up for the service. Also, for the quality services, user is requested to provide its telephone number as an optional. Additionally, the Company may request user to provide selective personal information in connection with statistical data analysis for questionnaire poll or gift event. Meanwhile, the Company shall not collect any information that may infringe upon the user’s basic human rights, including, but not limited to, one’s race, ethnicity, ideology, beliefs, and place of birth, permanent domicile, political inclination, criminal records, physical condition or sexual orientation without prior consent from the user. Moreover, collected personal information shall be utilized only for the purposes that are acknowledged to the user and shall not be used for any other purposes, and shall be protected.
+
+
+3. Period of Possession and Use of Personal Information 
+Personal information of user of shopping mall shall be maintained and used for the period during which the services are provided to such user. However, upon user’s termination, correction or withdrawal from the membership which shall be carried out in accordance with following “6. User Personal Information Management (Review, Correction, Termination etc)”, the relevant personal information shall be permanently destroyed to prevent the information from being recovered. Also, any collected personal information for temporal usage (poll, event, verification etc) under the “2. Categories of Personal Information to Be Collected and Method of Collecting Personal Information” shall be permanently destroyed to prevent the information from being recovered as above mentioned. 
+
+
+When the purpose for collecting the relevant personal information has been fulfilled, the Company shall immediately destroy such information in accordance with the retention period and the use period of such information. The procedures for destruction are as follows. However, in order to prevent any unlawful/wrongful usage of website by the illegitimate user, the Company may retain the resident registration number of individual user for the period of one (1) year from respective withdrawal. In the event any personal information is required to be possessed for a certain period for confirmation of the relationship of rights or obligations related to transactions according to the applicable laws and regulations such as the Commercial Code, the Act on the Consumer Protection in the Electronic Commerce Transactions, etc., the personal information shall be possessed for a certain period. 
+
+
+When the period of possession with respect to which prior notice was given to the user has not lapsed yet or when the user consents to the possession, the promised period of possession:
+- Record on execution of the agreement or withdrawal of subscription, etc.: Five (5) years
+- Record on payment and supply of goods, etc. : Five (5) years
+- Record on consumer complaints or dispute resolution: Three (3) years
+
+The Company shall protect valuable personal information of user, and it shall destroy personal information as follows:
+-Personal information printed on paper shall be shredded, incinerated. 
+-Personal information stored in electronic format shall be deleted in a manner where such information is permanently irreproducible.
+
+	</textarea>
+	<div class="check"><input type="checkbox" id="agree2" name="agree2" value="1" class="middle" /><label for="agree2"> I Agree</label></div>
+
+
+
+	<div class="pt_40 center">
+		{if $etc.mode=='modify'}<a href="/kor/html/mypage.php" class="btn_off" title="Mypage">Mypage</a>{/if}
+		<input type="submit" class="btn_on b0" value="Next" />
+	</div>
+
+</form>

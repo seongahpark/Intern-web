@@ -1,0 +1,152 @@
+<script type="text/javascript" src="/web-cs/SE2.3.5.O10318/js/HuskyEZCreator.js" charset="utf-8"></script>
+
+{literal}
+<script type="text/javascript">
+function writeform_chk(obj)
+{
+	oEditors.getById["input_contents"].exec("UPDATE_CONTENTS_FIELD", []);
+
+	flag=frm_chk(obj);
+	if(flag)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+function onlinewof_chk()
+{
+	document.onlinewof.target = "ifrm";
+	var idx = $("#idx").val();
+	var title = $("#title").val();
+	var contents = $("#wof_contents").val();
+	console.log(contents);
+	$("#o_idx").val(idx);
+	$("#o_title").val(title);
+	$("#o_contents").val(contents);
+	//document.onlinewof.submit();
+	alert("온라인 포럼 등록에 성공하엿습니다");
+}
+</script>
+{/literal}
+
+<form name="writeform" method="post" action="{$smarty.server.PHP_SELF}" enctype="multipart/form-data" onsubmit="return writeform_chk(this);">
+<input type="hidden" name="menu" value="{$etc.menu}">
+<input type="hidden" id="tn" name="tn" value="{$etc.tn}">
+<input type="hidden" name="tab" value="{$etc.tab}">
+<input type="hidden" name="pagenum" value="{$etc.pagenum}">
+<input type="hidden" name="search_select" value="{$etc.search_select}">
+<input type="hidden" name="keyword" value="{$etc.enc_keyword}">
+<input type="hidden" id="idx" name="idx" value="{$L.idx}">
+<input type="hidden" name="mode" value="process">
+<input type="hidden" name="modes" value="{$etc.modes}">
+
+<h3>{$etc.board_title}</h3>
+<div class="funcNav">
+	<div id="tmp_msg">
+	</div>
+</div>
+{*
+<textarea id="debug_div" cols="90" rows="5"></textarea>
+<textarea id="debug_div2" cols="90" rows="5"></textarea>
+<textarea id="debug_div3" cols="90" rows="5"></textarea>
+<textarea id="debug_div4" cols="90" rows="5"></textarea>
+*}
+<table class="writeForm" summary="">
+	<tbody>
+		<tr>
+			<th width="15%">상단공지</th>
+			<td class="p10">
+				<input type="checkbox" id="notice" name="notice" value="1"{if $L.notice} checked="checked"{/if} /><label for="notice">사용</label>
+			</td>
+		</tr>
+		<tr>
+			<th>제목</th>
+			<td class="p10"><input type="text" id="title" name="title" title="제목" value="{$L.title}" maxlength="55" class="input required" size="50" /></td>
+		</tr>
+		{*
+		<tr>
+			<th>첨부파일1</th>
+			<td class="p10"><input type="file" id="file1" name="file1" class="input" size="50" />{if $etc.mode=="modify" && $L.filename1!=""}<br /><strong>파일 : {$L.filename_real1}</strong>&nbsp;<input type="checkbox" id="delcheck1" name="delcheck1" value="Y" style="vertical-align:middle;">&nbsp;<label for="delcheck1">삭제</label>{/if}</td>
+		</tr>
+		<tr>
+			<th>첨부파일2</th>
+			<td class="p10"><input type="file" id="file2" name="file2" class="input" size="50" />{if $etc.mode=="modify" && $L.filename2!=""}<br /><strong>파일 : {$L.filename_real2}</strong>&nbsp;<input type="checkbox" id="delcheck2" name="delcheck2" value="Y" style="vertical-align:middle;">&nbsp;<label for="delcheck2">삭제</label>{/if}</td>
+		</tr>
+		*}
+		<tr>
+			<th>내용</th>
+			<td class="p10">
+				* 본문 이미지 사이즈 : 가로 660px 이하<br /><br />
+				<a href="#none" onclick="$('#img_size_notice').toggle();return false;"><strong>* 삽입한 이미지 사이즈가 가로 660px를 초과할 경우 주의사항</strong></a>
+				<ul id="img_size_notice" style="display:none;">
+					<li>1. 에디터 하단의 html 선택</li>
+					<li>2. html 코드 중 해당 이미지 테그에 width="100%" 삽입(하단 예시 참고)</li>
+					<li>예시 :</li>
+					<li>&nbsp;&nbsp;이미지 테그 원본 : &lt;img src="UploadFolder/editor_img/201407/asdf.jpg" &gt;</li>
+					<li>&nbsp;&nbsp;수정 후 : &lt;img src="UploadFolder/editor_img/201407/asdf.jpg" width="100%"&gt;</li>
+				</ul>
+				<br/><br/>
+				<p><strong>* 온라인 포럼 등록 내용</strong> (우측 하단의 온라인 포럼 등록 버튼을 눌러야 등록이 완료됩니다)</p>
+				<br/>
+				<textarea id="wof_contents" name="wof_contents" title="짧은 내용" maxlength="55" class="input required" size="50" placeholder="이 입력칸은 online wof 페이지에 노출될 짧은 내용 입력 칸입니다." style="width:640px; resize:none;">{$L.wof_contents}</textarea>
+				<div style="width:660px;margin:10px auto 0 auto;">
+					<textarea name="contents" id="input_contents" style="width:650px; height:412px; display:none;" class="required" title="내용">{$L.contents}</textarea>
+				</div>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<div class="fncBtn"> 
+	<span class="left">
+	</span>
+
+	<input type="button" value="목록" onclick="location.href='?menu={$etc.menu}&tn={$etc.tn}&tab={$etc.tab}&mode=list&search_select={$etc.search_select}&keyword={$etc.keyword}&pagenum={$etc.pagenum}'" class="btnGray hand" />
+
+	<span class="right">
+		<input type="button" value="온라인포럼 등록" onclick="onlinewof_chk();" class="btnGray hand" />
+		<input type="submit" value="확인" class="btnGray hand" />
+		<input type="button" value="취소" onclick="history.back();" class="btnGray hand" />
+	</span>
+</div>
+
+</form>
+<iframe name="ifrm" width="0" height="0" frameborder="0"></iframe>
+
+{literal}
+<script type="text/javascript">
+var oEditors = [];
+
+// 추가 글꼴 목록
+//var aAdditionalFontSet = [["MS UI Gothic", "MS UI Gothic"], ["Comic Sans MS", "Comic Sans MS"],["TEST","TEST"]];
+
+nhn.husky.EZCreator.createInIFrame({
+	oAppRef: oEditors,
+	elPlaceHolder: "input_contents",
+	sSkinURI: "/web-cs/SE2.3.5.O10318/SmartEditor2Skin.html",	
+	htParams : {
+		bUseToolbar : true,				// 툴바 사용 여부 (true:사용/ false:사용하지 않음)
+		bUseVerticalResizer : true,		// 입력창 크기 조절바 사용 여부 (true:사용/ false:사용하지 않음)
+		bUseModeChanger : true,			// 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
+		//aAdditionalFontList : aAdditionalFontSet,		// 추가 글꼴 목록
+		fOnBeforeUnload : function(){
+			//alert("완료!");
+		}
+	}, //boolean
+	fOnAppLoad : function(){
+		//예제 코드
+		//oEditors.getById["input_contents"].exec("PASTE_HTML", ["로딩이 완료된 후에 본문에 삽입되는 text입니다."]);
+	},
+	fCreator: "createSEditor2"
+});
+
+function pasteHTML(id, sHTML) {
+	//var sHTML = "<span style='color:#FF0000;'>이미지도 같은 방식으로 삽입합니다.<\/span>";
+	//alert(sHTML);
+	oEditors.getById[id].exec("PASTE_HTML", [sHTML]);
+}
+</script>
+{/literal}

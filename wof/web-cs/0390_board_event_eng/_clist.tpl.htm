@@ -1,0 +1,60 @@
+<table class="basic">
+	<colgroup>
+		<col width="5%" />
+		<col width="50%" />
+		<col width="10%" />
+		<col width="20%" />
+		<col width="5%" />
+	</colgroup>
+	<thead>
+		<tr>
+			<th>No.</th>
+			<th>Title</th>
+			<th>Writer</th>
+			<th>Date</th>
+			<th>Hits</th>
+		</tr>
+	</thead>
+	<tbody>
+		{section name=i loop=$L2}
+		<tr>
+			<td><span class="re_a bold">Notice</td>
+			<td class="list_tit bold"><a href="?mode=read&idx={$L2[i].idx}&pagenum={$etc.pagenum}&search_select={$etc.search_select}&keyword={$etc.enc_keyword}">{$L2[i].title}</a></td>
+			<td>{$L2[i].user_name}</td>
+			<td>{$L2[i].reg_date[0]}</td>
+			<td>{$L2[i].hits}</td>
+		</tr>
+		{/section}
+		{section name=i loop=$L}
+		<tr>
+			<td>{$L[i].no}</td>
+			<td class="list_tit"><a href="?mode=read&idx={$L[i].idx}&pagenum={$etc.pagenum}&search_select={$etc.search_select}&keyword={$etc.enc_keyword}">{$L[i].title}</a></td>
+			<td>{$L[i].user_name}</td>
+			<td>{$L[i].reg_date[0]}</td>
+			<td class="mobile_td">{$L[i].hits}</td>
+		</tr>
+		{sectionelse}
+		<tr><td colspan="5" height="30" class="tac">No data.</td></tr>
+		{/section}
+	</tbody>
+</table>
+
+<div class="clear_div"></div>
+
+<div id="page">
+	<span>
+		{$etc.pageclick}
+	</span>
+</div>
+
+<div id="search">
+	<form action="{$smarty.server.PHP_SELF}" method="get" name="searchform" id="searchform">
+		<select name="search_select" id="search_select" class="input02 h30">
+			<option value="title"{if $etc.search_select=='title'} selected="selected"{/if}>Title</option>
+			<option value="contents"{if $etc.search_select=='contents'} selected="selected"{/if}>Contents</option>
+			<option value="all"{if $etc.search_select=='all'} selected="selected"{/if}>Title+Contents</option>
+		</select>
+		<input name="keyword" id="keyword" type="text" class="input" title="Keyword" value="{$etc.keyword}" />
+		<input type="submit" value="Search" class="btn_search_s b0" />
+	</form>
+</div>

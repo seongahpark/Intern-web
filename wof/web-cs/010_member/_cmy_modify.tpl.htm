@@ -1,0 +1,530 @@
+<div class="tab_area">
+	<ul class="tab_w">
+		<li class="tab_on"><a href="mypage.php">회원정보</a></li>
+		<!-- 20140818 : 리스트보기 거치지 않고 바로 등록가능하게 링크 수정 -->
+		<!-- <li><a href="mypage_program_modify.php">프로그램 등록</a></li> -->
+		<div class="clear_div"></div>
+	</ul>
+</div>
+
+{literal}
+<script type="text/javascript">
+function writeform_chk(obj)
+{
+	if($("#user_id").val()=='')
+	{
+		alert('이메일(아이디)를 입력하세요.');
+		$("#user_id").focus();
+		return false;
+	}
+	if(!valid_email($("#user_id").val()))
+	{
+		alert('잘못된 이메일(아이디) 형식입니다.');
+		$('#user_id').focus();
+		return false;
+	}
+
+	id_chk_obj=$('input#id_chk_flag');
+	if(id_chk_obj.val()=='0')
+	{
+		alert('사용 불가능한 이메일(아이디)입니다.');
+		$('input#user_id').focus();
+		return false;
+	}
+	if($("#password").val()=='' && $("#modes").val()=='write')
+	{
+		alert('비밀번호를 입력하세요.');
+		$("#password").focus();
+		return false;
+	}
+	if($("#password").val().length<6 && $("#modes").val()=='write')
+	{
+		alert('비밀번호는 6자리 이상 입력하세요.');
+		$("#password").focus();
+		return false;
+	}
+
+	if($("#password1").val()=='')
+	{
+		if($("#password").val()==''){
+			alert('비밀번호를 입력하세요.');
+			$("#password").focus();
+			return false;
+		}
+	}
+
+	if($("#password").val().length<6 && $("#password").val()!='')
+	{
+		alert('비밀번호는 6자리 이상 입력하세요.');
+		$("#password").focus();
+		return false;
+	}
+	if($("#password2").val()=='' && $("#modes").val()=='write')
+	{
+		alert('비밀번호확인을 입력하세요.');
+		$("#password2").focus();
+		return false;
+	}
+	if($("#password").val()!=$("#password2").val())
+	{
+		alert('비밀번호가 일치하지 않습니다.');
+		$('#password').focus();
+		return false;
+	}
+	if($("#password").val())
+	{
+		if(!CheckPassword($("#password").val(), $("#password")))
+		{
+			return false;
+		}
+	}
+
+	/*if($("input[name=appellation]:radio:checked").length==0)
+	{
+		alert('호칭을 선택하세요.');
+		return false;
+	}*/
+
+	if($("#user_name1").val()=='')
+	{
+		alert('이름(성)을 입력하세요.');
+		$("#user_name1").focus();
+		return false;
+	}
+
+	if($("#user_name2").val()=='')
+	{
+		alert('이름(이름)을 입력하세요.');
+		$("#user_name2").focus();
+		return false;
+	}
+
+	if($("#eng_user_name1").val()=='')
+	{
+		alert('영문이름(성)을 입력하세요.');
+		$("#eng_user_name1").focus();
+		return false;
+	}
+
+	if($("#eng_user_name2").val()=='')
+	{
+		alert('영문이름(이름)을 입력하세요.');
+		$("#eng_user_name2").focus();
+		return false;
+	}
+
+	if($("#belong").val()=='')
+	{
+		alert('소속(국문)을 입력하세요.');
+		$("#belong").focus();
+		return false;
+	}
+
+	if($("#eng_belong").val()=='')
+	{
+		alert('소속(영문)을 입력하세요.');
+		$("#eng_belong").focus();
+		return false;
+	}
+
+	if($("#position").val()=='')
+	{
+		alert('직책(국문)을 입력하세요.');
+		$("#position").focus();
+		return false;
+	}
+
+	if($("#eng_position").val()=='')
+	{
+		alert('직책(영문)을 입력하세요.');
+		$("#eng_position").focus();
+		return false;
+	}
+
+	if($("#nationality").val()=='')
+	{
+		alert('국적을 선택하세요.');
+		$("#nationality").focus();
+		return false;
+	}
+
+	/*if($("#residence").val()=='')
+	{
+		alert('거주국가를 선택하세요.');
+		$("#residence").focus();
+		return false;
+	}
+
+	if($('#tel1').val()=='')
+	{
+		alert($('#tel1').attr('title')+'를 선택하세요.');
+		$('#tel1').focus();
+		return false;
+	}
+	if($('#tel2').val()=='')
+	{
+		alert($('#tel2').attr('title')+'를 입력하세요.');
+		$('#tel2').focus();
+		return false;
+	}
+	if($('#tel3').val()=='')
+	{
+		alert($('#tel3').attr('title')+'를 입력하세요.');
+		$('#tel3').focus();
+		return false;
+	}*/
+	if($('#mobile1').val()=='')
+	{
+		alert($('#mobile1').attr('title')+'를 선택하세요.');
+		$('#mobile1').focus();
+		return false;
+	}
+	if($('#mobile2').val()=='')
+	{
+		alert($('#mobile2').attr('title')+'를 입력하세요.');
+		$('#mobile2').focus();
+		return false;
+	}
+	if($('#mobile3').val()=='')
+	{
+		alert($('#mobile3').attr('title')+'를 입력하세요.');
+		$('#mobile3').focus();
+		return false;
+	}
+
+	return true;
+}
+
+/* 20190903 체크박스 전체선택, 전체해제 */
+function checkAll(n){
+      if( $("#interestAll").is(':checked') ){
+		for(i=1; i<=n; i++){
+			$("input[name=interest"+i+"]").prop("checked", true);
+			j=i+1;
+			$("input[name=interest"+j+"]").attr('disabled', true);
+		}
+      }else{
+		for(i=1; i<=n; i++){
+			$("input[name=interest"+i+"]").prop("checked", false);
+			j=i+1;
+			$("input[name=interest"+j+"]").attr('disabled', false);
+		}
+      }
+}
+
+
+/*
+* 20200513 체크박스 선택풀기
+* 파라미터 : 체크풀고싶은 체크박스 name
+* 각 체크박스에 함수 적용해야합니다
+*/
+function unChk(chkFalse){
+	$("input[name="+chkFalse+"]").prop("checked", false);
+}
+
+
+</script>
+{/literal}
+
+
+<div id="online_w">
+	<div class="online_box">
+		<!-- <div class="title">일반 참가자 정보수정</div> -->
+		<font color = "red">* 등록사항 재설정을 원하시는 경우 정보 수정 후 저장해주시기 바랍니다.</font><br>
+		* 입력하신 정보는 다른 목적으로 사용되지 않으며, 행사가 마감된 후 자동으로 폐기됩니다. <br/>
+		* 모든 입력란은 필수입력사항 입니다.<br>
+	</div>
+</div>
+
+
+<div class="pt_30"></div>
+
+<form name="writeform" method="post" action="{$smarty.server.PHP_SELF}" enctype="multipart/form-data" onsubmit="return writeform_chk(this);">
+	<input type="hidden" name="idx" value="{$L.idx}" />
+	<input type="hidden" id="mode" name="mode" value="process" />
+	<input type="hidden" id="modes" name="modes" value="{$etc.modes}" />
+	<input type="hidden" id="id_chk_flag" name="id_chk_flag" value="1" />
+	<input type="hidden" id="password1" name="password1" value="{$L.password1}" />
+	<table class="t3">
+		<colgroup>
+			<col width="25%">
+			<col width="">
+		</colgroup>
+		<tr>
+			<th>이메일(아이디)</th>
+			<td>
+				<input type="text" id="user_id" name="user_id" value="{$L.user_id}" title="이메일(아이디)" class="input02" style="ime-mode:disabled" size="30" onblur="id_chk(this);" disabled="disabled" />
+			</td>
+		</tr>
+		<tr>
+			<th>비밀번호</th>
+			<td>
+				<input type="password" id="password" name="password" value="" title="비밀번호" maxlength="20" class="input02" size="30" />&nbsp;&nbsp;* 비밀번호 변경시에만 입력하세요.
+				<br />
+				6자 ~ 20자 숫자와 영문자 혼용 / 연속 4자리 같은 문자 사용 불가
+			</td>
+		</tr>
+		<tr>
+			<th>비밀번호 확인</th>
+			<td>
+				<input type="password" id="password2" name="password2" value="" class="input02" size="30" title="비밀번호 확인" maxlength="20" class="" />&nbsp;&nbsp;* 비밀번호 변경시에만 입력하세요.
+				<br />
+				6자 ~ 20자 숫자와 영문자 혼용 / 연속 4자리 같은 문자 사용 불가
+			</td>
+		</tr>
+		<!--<tr>
+			<th>호칭</th>
+			<td>
+				<input type="radio" id="appellation4" name="appellation" value="40" class="radio_01"{if $L.appellation=='40'} checked="checked"{/if} /><label for="appellation4" class="pr_20">Prof.</label>
+				<input type="radio" id="appellation3" name="appellation" value="30" class="radio_01"{if $L.appellation=='30'} checked="checked"{/if} /><label for="appellation3" class="pr_20">Dr.</label>
+				<input type="radio" id="appellation1" name="appellation" value="10" class="radio_01"{if $L.appellation=='10'} checked="checked"{/if} /><label for="appellation1" class="pr_20">Mr.</label>
+				<input type="radio" id="appellation2" name="appellation" value="20" class="radio_01"{if $L.appellation=='20'} checked="checked"{/if} /><label for="appellation2" class="pr_20">Ms.</label>
+				<input type="radio" id="appellation5" name="appellation" value="50" class="radio_01"{if $L.appellation=='50'} checked="checked"{/if} /><label for="appellation5" class="pr_20">Ph. D.</label>
+				<input type="radio" id="appellation6" name="appellation" value="60" class="radio_01"{if $L.appellation=='60'} checked="checked"{/if} /><label for="appellation6">student</label> 
+				<input type="radio" id="appellation7" name="appellation" value="70" class="radio_01" {if $L.appellation=='70'} checked="checked"{/if} /><label for="appellation7">기타 
+				<input type="text" id="etcVal" name="etcVal" size="10" class="input02" value="{$L.etcVal}" /></label>
+			</td>
+		</tr>-->
+		<tr>
+			<th>국문성명</th>
+			<td>
+				성 <input type="text" id="user_name1" name="user_name1" title="이름(성)" class="input02" size="15" value="{$L.user_name1}" />
+				<span class="pl_20">이름</span> <input type="text" id="user_name2" name="user_name2" title="이름(이름)" class="input02" size="15" value="{$L.user_name2}" />
+			</td>
+		</tr>
+		<tr>
+			<th>영문성명</th>
+			<td>
+				성 <input type="text" id="eng_user_name1" name="eng_user_name1" title="영문이름(성)" class="input02" size="15" value="{$L.eng_user_name1}" />
+				<span class="pl_20">이름</span> <input type="text" id="eng_user_name2" name="eng_user_name2" title="영문이름(이름)" class="input02" size="15" value="{$L.eng_user_name2}" />
+			</td>
+		</tr>
+		<!--<tr>
+			<th>성별</th>
+			<td>
+				<input type="radio" id="sex1" name="sex" value="m" class="radio_01" {if $L.sex=='m'} checked="checked"{/if}/><label for="sex1" class="pr_20">남</label>
+				<input type="radio" id="sex2" name="sex" value="f" class="radio_01" {if $L.sex=='f'} checked="checked"{/if}/><label for="sex2" class="pr_20">여</label>
+			</td>
+		</tr>-->
+		<tr>
+			<th>소속</th>
+			<td>
+				국문 <input type="text" id="belong" name="belong" value="{$L.belong}" class="input02" size="28" />
+				<span class="pl_20">영문</span> <input type="text" id="eng_belong" name="eng_belong" class="input02" value="{$L.eng_belong}" size="28" />
+			</td>
+		</tr>
+		<tr>
+			<th>직책</th>
+			<td>
+				국문 <input type="text" id="position" name="position" class="input02" value="{$L.position}" size="15" />
+				<span class="pl_20">영문</span> <input type="text" id="eng_position" name="eng_position" class="input02" value="{$L.eng_position}" size="15" />
+			</td>
+		</tr>
+		<!--
+		<tr>
+			<th>국적</th>
+			<td>
+				<select id="nationality" name="nationality" class="input02 h30">
+					<option value="">선택하세요</option>
+					{section name=i loop=$K}
+					<option value="{$K[i].c_name}" title="{$K[i].c_name}" >{$K[i].c_name}</option>
+					{/section}
+				</select>
+			</td>
+		</tr>
+		-->
+		<!--<tr>
+			<th>거주국가</th>
+			<td>
+				<select id="residence" name="residence" class="input02 h30">
+					<option value="">선택하세요</option>
+					{section name=i loop=$K}
+					<option value="{$K[i].c_name}" title="{$K[i].c_name}">{$K[i].c_name}</option>
+					{/section}
+				</select>
+			</td>
+		</tr>-->
+		<!--<tr>
+			<th>전화번호</th>
+			<td>
+				<select id="tel1" name="tel1" class="input02 h30" title="전화번호(앞3자리)">
+					<option value="02">02</option>
+					<option value="031">031</option>
+					<option value="032">032</option>
+					<option value="033">033</option>
+					<option value="041">041</option>
+					<option value="042">042</option>
+					<option value="043">043</option>
+					<option value="044">044</option>
+					<option value="051">051</option>
+					<option value="052">052</option>
+					<option value="053">053</option>
+					<option value="054">054</option>
+					<option value="055">055</option>
+					<option value="061">061</option>
+					<option value="062">062</option>
+					<option value="063">063</option>
+					<option value="064">064</option>
+					<option value="070">070</option>
+					<option value="080">080</option>
+				</select>
+				-
+				<input type="text" id="tel2" name="tel2" maxlength="4" size="6" class="input02" title="전화번호(국번)" value="{$L.tel[1]}" />
+				-
+				<input type="text" id="tel3" name="tel3" maxlength="4" size="6" class="input02" title="전화번호(뒤4자리)" value="{$L.tel[2]}">
+			</td>
+		</tr>-->
+		<tr>
+			<th>휴대전화 번호</th>
+			<td>
+				<select id="mobile1" name="mobile1" class="input02 h30" title="휴대전화 번호(앞3자리)">
+					<option value="010">010</option>
+					<option value="011">011</option>
+					<option value="016">016</option>
+					<option value="017">017</option>
+					<option value="018">018</option>
+					<option value="019">019</option>
+				</select>
+				-
+				<input type="text" id="mobile2" name="mobile2" maxlength="4" size="6" class="input02" title="휴대전화 번호(국번)" value="{$L.mobile[1]}" />
+				-
+				<input type="text" id="mobile3" name="mobile3" maxlength="4" size="6" class="input02" title="휴대전화 번호(뒤4자리)" value="{$L.mobile[2]}" />
+			</td>
+		</tr>
+
+		<tr>
+			<th class="m_br">참가 프로그램</th>
+			<td>
+				<div class="pgr-table">
+					<div class="pgr-group group01">
+						<div class="date-tit first">10월 27일(화)</div>
+						<div class="grp-box check-grp">
+							<div class="time">15:30 ~ 17:30</div>
+							<div class="check-box full"><input type="checkbox" name="interest1" value="Y" {if $L.interest1=='Y'}checked{/if} id="interest1"><label for="interest1">개막식 & 기조세션</label></div>
+						</div>
+						<div class="date-tit">10월 28일(수)</div>
+						<div class="grp-box check-grp">
+							<div class="time">10:00 ~ 12:00</div>
+							<div class="check-box half"><input type="checkbox" name="interest2" value="Y" {if $L.interest2=='Y'}checked{/if} id="interest2" onclick="unChk('interest3');"><label for="interest2">정규세션 1 [수산]</label></div>
+							<div class="check-box half"><input type="checkbox" name="interest3" value="Y" {if $L.interest3=='Y'}checked{/if} id="interest3" onclick="unChk('interest2');"><label for="interest3">특별세션 1 [해양도시 네트워크]</label></div>
+						</div>
+						<div class="grp-box check-grp">
+							<div class="time">13:30 ~ 16:30</div>
+							<div class="check-box half"><input type="checkbox" name="interest4" value="Y" {if $L.interest4=='Y'}checked{/if} id="interest4" onclick="unChk('interest5');"><label for="interest4">정규세션 2 [해양환경]</label></div>
+							<div class="check-box half"><input type="checkbox" name="interest5" value="Y" {if $L.interest5=='Y'}checked{/if} id="interest5" onclick="unChk('interest4');"><label for="interest5">특별세션 2 [해양수산 ODA]</label></div>
+						</div>
+						<div class="date-tit">10월 29일(목)</div>
+						<div class="grp-box check-grp">
+							<div class="time">10:00 ~ 12:00</div>
+							<div class="check-box half"><input type="checkbox" name="interest6" value="Y" {if $L.interest6=='Y'}checked{/if} id="interest6" onclick="unChk('interest7');"><label for="interest6">정규세션 3 [조선]</label></div>
+							<div class="check-box half"><input type="checkbox" name="interest7" value="Y" {if $L.interest7=='Y'}checked{/if} id="interest7" onclick="unChk('interest6');"><label for="interest7">특별세션 3 [해양인문학]</label></div>
+						</div>
+						<div class="grp-box check-grp">
+							<div class="time">13:30 ~ 16:30</div>
+							<div class="check-box half"><input type="checkbox" name="interest8" value="Y" {if $L.interest8=='Y'}checked{/if} id="interest8" onclick="unChk('interest9');"><label for="interest8">정규세션 4 [해운·항만·금융]</label></div>
+							<div class="check-box half"><input type="checkbox" name="interest9" value="Y" {if $L.interest9=='Y'}checked{/if} id="interest9" onclick="unChk('interest8');"><label for="interest9">특별세션 4 l 제5회 해양스타트업</label></div>
+						</div>
+						<div class="grp-box check-grp">
+							<div class="time">16:30 ~ 17:30</div>
+							<div class="check-box full"><input type="checkbox" name="interest10" value="Y" {if $L.interest10=='Y'}checked{/if} id="interest10"><label for="interest10">에필로그 세션</label></div>							
+						</div>
+				</div>
+				<!-- 2019
+				<div class="chapter">
+			        <div class="title">[10월 30일 - 11월 01일]</div>
+			        <ul>
+			            <li><input type="checkbox" id="interestAll" name="interest1" value="Y" {if $L.interest1=='Y'}checked{/if} onclick="checkAll(13);"><label for="interestAll">전체 프로그램</label></li>
+			        </ul>
+			    </div>
+			    <div class="chapter">
+			        <div class="title">[10월 30일]</div>
+			        <ul>
+                        <li><input type="checkbox" id="interest2" name="interest2" value="Y" {if $L.interest2=='Y'}checked{/if}><label for="interest2">[기조세션] 해양의 축적, 미래를 쌓다</label></li>
+			        </ul>
+			    </div>
+			    <div class="chapter">
+			        <div class="title">[10월 31일]</div>
+			        <ul>
+                        <li><input type="checkbox" id="interest3" name="interest3" value="Y" {if $L.interest3=='Y'}checked{/if}><label for="interest3">정규세션 1 [해운·항만의 축적] 세계 경제와 무역 질서 변화, 그리고 아시아 해운·항만 시장 전망</label></li>
+                        <li><input type="checkbox" id="interest4" name="interest4" value="Y" {if $L.interest4=='Y'}checked{/if}><label for="interest4">정규세션 2 [수산의 축적] 자원관리와 스마트양식</label></li>
+                        <li><input type="checkbox" id="interest5" name="interest5" value="Y" {if $L.interest5=='Y'}checked{/if}><label for="interest5">특별세션 1 해양도시 네트워크</label></li>
+                        <li><input type="checkbox" id="interest6" name="interest6" value="Y" {if $L.interest6=='Y'}checked{/if}><label for="interest6">특별세션 2 블루이코노미와 신남방정책 실현을 위한 해양수산 ODA<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; – 한ㆍ아세안 특별정상회의 D-25</label></li>
+                        <li><input type="checkbox" id="interest7" name="interest7" value="Y" {if $L.interest7=='Y'}checked{/if}><label for="interest7">특별세션 3 해양인문학 – 부산항의 과거와 미래</label></li>
+			        </ul>
+			    </div>
+			    <div class="chapter">
+			        <div class="title">[11월 01일]</div>
+			        <ul>
+                        <li><input type="checkbox" id="interest8" name="interest8" value="Y" {if $L.interest8=='Y'}checked{/if}><label for="interest8">정규세션 3 [동북아평화의 축적] 북방 물류 다자간 협력과 부산의 역할</label></li>
+                        <li><input type="checkbox" id="interest9" name="interest9" value="Y" {if $L.interest9=='Y'}checked{/if}><label for="interest9">정규세션 4 [조선기술의 축적] 온실가스 저감시대의 기술현안과 수소선박</label></li>
+                        <li><input type="checkbox" id="interest10" name="interest10" value="Y" {if $L.interest10=='Y'}checked{/if}><label for="interest10">정규세션 5 [에필로그] 미래의 축적과 세계해양</label></li>
+                        <li><input type="checkbox" id="interest11" name="interest11" value="Y" {if $L.interest11=='Y'}checked{/if}><label for="interest11">특별세션 4 해양환경 – 바다를 습격한 플라스틱</label></li>
+                        <li><input type="checkbox" id="interest12" name="interest12" value="Y" {if $L.interest12=='Y'}checked{/if}><label for="interest12">특별세션 5 제4회 해양스타트업</label></li>
+			            
+			        </ul>
+			    </div>
+			    <div class="chapter">
+			        <ul>
+                        <li><input type="checkbox" id="interest13" name="interest13" value="Y" {if $L.interest13=='Y'}checked{/if}><label for="interest13">특별프로그램 WOF with WWF 오션 클린업 캠페인 (선착순 100명)</label></li>
+			        </ul>
+			    </div>
+			    <div class="chapter">
+			        <ul>
+                        <li><input type="checkbox" id="interest14" name="interest14" value="Y" {if $L.interest14=='Y'}checked{/if}><label for="interest14">기타 </label><input type="text" id="etcVal1" name="etcVal1" size="20" class="input02" value="{$L.etcVal1}"/></li>
+			        </ul>
+			    </div>
+				-->
+			</td>
+		</tr>
+
+		<tr>
+			<th class="m_br">참가경로<br>(다수선택 가능) </th>
+			<td>
+               <div class="chapter">
+                   <ul>
+                        <li><input type="checkbox" name="roots1" id="roots1" value="Y" {if $L.roots1=='Y'}checked{/if}><label for="roots1">초청장 및 리플릿</label></li>
+                        <li><input type="checkbox" name="roots2" id="roots2" value="Y" {if $L.roots2=='Y'}checked{/if}><label for="roots2">일간지 및 해양 전문지</label></li>
+                        <li><input type="checkbox" name="roots3" id="roots3" value="Y" {if $L.roots3=='Y'}checked{/if}><label for="roots3">TV 및 라디오 광고</label></li>
+                        <li><input type="checkbox" name="roots4" id="roots4" value="Y" {if $L.roots4=='Y'}checked{/if}><label for="roots4">인터넷 보도자료</label></li>
+                        <li><input type="checkbox" name="roots5" id="roots5" value="Y" {if $L.roots5=='Y'}checked{/if}><label for="roots5">이메일 뉴스레터</label></li>
+                        <li><input type="checkbox" name="roots6" id="roots6" value="Y" {if $L.roots6=='Y'}checked{/if}><label for="roots6">SNS(유튜브, 페이스북, 인스타그램 등)</label></li>
+						<li><input type="checkbox" name="roots7" id="roots7" value="Y" {if $L.roots7=='Y'}checked{/if}><label for="roots7">현수막 및 가로등 배너</label></li>		
+                        <li><input type="checkbox" name="roots8" id="roots8" value="Y" {if $L.roots8=='Y'}checked{/if}><label for="roots8">기타</label><input type="text" id="etcVal2" name="etcVal2" size="20" class="input02" value="{$L.etcVal2}" /></li>
+                   </ul>
+               </div>
+			</td>
+		</tr>
+
+		<tr>
+			<th class="m_br">참가목적<br>(다수선택 가능) </th>
+			<td>
+			    <div class="chapter">
+			        <ul>
+			            <li><input type="checkbox" id="object1" name="object1" value="Y" {if $L.object1=='Y'}checked{/if}><label for="object1">관련분야의 정보수집 및 지식습득</label></li>
+                        <li><input type="checkbox" id="object2" name="object2" value="Y" {if $L.object2=='Y'}checked{/if}><label for="object2">선호연사의 강연청강</label></li>
+                        <li><input type="checkbox" id="object3" name="object3" value="Y" {if $L.object3=='Y'}checked{/if}><label for="object3">흥미로운 주제와 컨텐츠</label></li>
+                        <li><input type="checkbox" id="object4" name="object4" value="Y" {if $L.object4=='Y'}checked{/if}><label for="object4">관련 업계와의 네트워킹</label></li>
+                        <li><input type="checkbox" id="object5" name="object5" value="Y" {if $L.object5=='Y'}checked{/if}><label for="object5">지인의 권유</label></li>
+                        <li><input type="checkbox" id="object6" name="object6" value="Y" {if $L.object6=='Y'}checked{/if}><label for="object6">기타</label> <input type="text" id="etcVal3" name="etcVal3" size="20" class="input02" value="{$L.etcVal3}" /></li>
+			        </ul>
+			    </div>
+                
+			</td>
+		</tr>
+
+	</table>
+
+	<div class="pt_40 center">
+		<input type="submit" class="btn_on b0 hand" value="저장" />
+	</div>
+
+</form>
+
+{literal}
+<script type="text/javascript">
+	$("#nationality").val('{/literal}{$L.nationality}{literal}');
+	$("#residence").val('{/literal}{$L.residence}{literal}');
+	$("#tel1").val('{/literal}{$L.tel[0]}{literal}');
+	$("#mobile1").val('{/literal}{$L.mobile[0]}{literal}');
+</script>
+{/literal}
