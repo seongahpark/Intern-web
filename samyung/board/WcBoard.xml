@@ -1,0 +1,913 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap>
+
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<!-- 목록 조회 조건  -->
+	<sql id="baseBossBoardUserDao.listWhereClause">
+		<dynamic>
+			<isNotEmpty prepend="AND" property="sw">
+				<isEqual prepend="" property="sv" compareValue="title">
+						TITLE LIKE CONCAT('%',#sw#,'%')
+				</isEqual>
+				<isEqual prepend="" property="sv" compareValue="name">
+						NAME LIKE CONCAT('%',#sw#,'%')
+				</isEqual>
+				<isEqual prepend="" property="sv" compareValue="cntsSearch">
+						CNTS_SEARCH LIKE CONCAT('%',#sw#,'%')
+				</isEqual>
+				<isEqual prepend="" property="sv" compareValue="all">
+						TITLE LIKE CONCAT('%',#sw#,'%')
+					OR	CNTS_SEARCH LIKE CONCAT('%',#sw#,'%')
+				</isEqual>
+				
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="fsYear">
+				<isNotEqual property="fsYear" compareValue="">
+						FS_YEAR 		= #fsYear#
+				</isNotEqual>
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="fsDvsn1">
+				<isNotEqual property="fsDvsn1" compareValue="">
+	 	 		 		FS_DVSN1		= #fsDvsn1#
+	 	 		 </isNotEqual>
+	 	 	</isNotEmpty>
+	 	 	<isNotEmpty prepend="AND" property="fsDvsn2">
+	 	 		<isNotEqual property="fsDvsn2" compareValue="">
+	 	 		 		FS_DVSN2		= #fsDvsn2#
+	 	 		 </isNotEqual>
+	 	 	</isNotEmpty>
+			
+		</dynamic>	
+	</sql>
+	
+	 
+	<select id="baseBossBoardInfoDao.selectBoardInfoListCnt" parameterClass="wcBoardInfoVO" resultClass="java.lang.Integer" >
+		/*baseBossBoardInfoDao.selectBoardInfoListCnt*/
+    		SELECT 	COUNT(*)
+    		  FROM	WC_BOARD_INFO
+			 WHERE 	1=1
+			<isEqual prepend="AND" property="boardType" compareValue="NORMAL">
+					BOARD_TYPE	= 'NORMAL'
+    		</isEqual>
+    		<isEqual prepend="AND" property="boardType" compareValue="GALLERY">
+					BOARD_TYPE	= 'GALLERY'
+    		</isEqual>
+			<isNotEmpty prepend="AND" property="sw">
+				<isEqual prepend="" property="sv" compareValue="A">
+						BOARD_NM LIKE CONCAT('%',REPLACE(#sw#,' ',''),'%')
+				</isEqual>
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="langType">
+					LANG_TYPE = #langType#			
+			</isNotEmpty>
+	</select>
+	
+	<select id="baseBossBoardInfoDao.selectBoardInfoList" parameterClass="wcBoardInfoVO" resultClass="egovMap">
+		/*baseBossBoardInfoDao.selectBoardInfoList*/
+			SELECT	 BOARD_ID
+    				,BOARD_NM
+    				,BOARD_TYPE
+    				,BOARD_SKIN
+    				,AUTH_WRITER
+    				,AUTH_READER
+    				,DATE_FORMAT(REGI_DTM, "%Y-%m-%d") AS REGI_DTM
+    		  FROM	 WC_BOARD_INFO
+			 WHERE 	 1=1
+			<isEqual prepend="AND" property="boardType" compareValue="NORMAL">
+					 BOARD_TYPE	= 'NORMAL'
+    		</isEqual>
+    		<isEqual prepend="AND" property="boardType" compareValue="PHOTO">
+					 BOARD_TYPE	= 'PHOTO'
+    		</isEqual>
+			<isNotEmpty prepend="AND" property="sw">
+				<isEqual prepend="" property="sv" compareValue="A">
+						BOARD_NM LIKE CONCAT('%',REPLACE(#sw#,' ',''),'%')
+				</isEqual>
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="langType">
+					LANG_TYPE = #langType#			
+			</isNotEmpty>
+			LIMIT  #recordCountPerPage# OFFSET #firstIndex#
+    </select>	
+    
+    
+    <insert id="baseBossBoardInfoDao.insertBoardInfo" parameterClass="wcBoardInfoVO">
+    	/*baseBossBoardInfoDao.insertBoardInfo*/
+    	<![CDATA[
+    	INSERT INTO WC_BOARD_INFO
+    				(BOARD_ID
+    				,BOARD_NM
+    				,BOARD_GRP
+    				,BOARD_TYPE
+    				,BOARD_SKIN
+    				,BOARD_TBL
+    				,AUTH_WRITER
+    				,AUTH_READER
+    				,AUTH_NOTICE
+    				,AUTH_ANSWER
+    				,AUTH_MEMO
+    				,SECRET_USE
+    				,EDITOR_USE
+    				,ITEM_USE
+    				,FILE_NUM
+    				,FILE_SIZE
+    				,FILE_ALW_EXT
+    				,NEWICON_DAY
+    				,ITEMS
+    				,ROW_CNT
+    				,PAGE_CNT
+    				,LANG_TYPE
+    				,TOP_HTML
+    				,BOTTOM_HTML
+    				,REGI_DTM
+    				,REGI_ID)
+    				VALUES
+    				(#boardId#
+    				,#boardNm#
+    				,#boardGrp#
+    				,#boardType#
+    				,#boardSkin#
+    				,#boardTbl#
+    				,#authWriter#
+    				,#authReader#
+    				,#authNotice#
+    				,#authAnswer# 
+    				,#authMemo#
+    				,#secretUse#
+    				,#editorUse#
+    				,#itemUse#
+    				,#fileNum#
+    				,#fileSize#
+    				,#fileAlwExt#
+    				,#newiconDay#
+    				,#items#
+    				,#rowCnt#
+    				,#pageCnt#
+    				,#langType#
+    				,#topHtml#
+    				,#bottomHtml#
+    				,NOW()
+    				,#regiId#)
+    	]]> 	
+    </insert>
+     
+    
+    <select id="baseBossBoardInfoDao.selectBoardInfo" parameterClass="wcBoardInfoVO" resultClass="egovMap">
+    	/*baseBossBoardInfoDao.selectBoardInfo*/
+	 	<![CDATA[
+	 		SELECT BOARD_ID
+    				,BOARD_NM
+    				,BOARD_GRP
+    				,BOARD_TYPE
+    				,BOARD_SKIN
+    				,BOARD_TBL
+    				,AUTH_WRITER
+    				,AUTH_READER
+    				,AUTH_NOTICE
+    				,AUTH_ANSWER
+    				,AUTH_MEMO
+    				,SECRET_USE
+    				,EDITOR_USE
+    				,ITEM_USE
+    				,FILE_NUM
+    				,FILE_SIZE
+    				,FILE_ALW_EXT
+    				,NEWICON_DAY
+    				,ITEMS
+    				,ROW_CNT
+    				,PAGE_CNT
+    				,TOP_HTML
+    				,BOTTOM_HTML
+    				,DATE_FORMAT(REGI_DTM, "%Y-%m-%d") AS REGI_DTM
+    				,REGI_ID
+    				,LANG_TYPE
+    		FROM WC_BOARD_INFO
+    		WHERE 1=1
+    		AND BOARD_ID  = #boardId#
+	 	]]>
+	 </select>
+	 
+	 <select id="baseBossBoardInfoDao.selectBoardInfoAll" parameterClass="java.lang.String" resultClass="egovMap">
+	 	/*baseBossBoardInfoDao.selectBoardInfoAll*/
+		 	SELECT BOARD_ID
+		 		  ,BOARD_NM
+		 		  ,BOARD_TYPE
+		 		  ,LANG_TYPE
+		 	FROM WC_BOARD_INFO
+		 	WHERE 1=1 		  
+    		ORDER BY BOARD_ID ASC
+	 </select>
+	 
+	 <update id="baseBossBoardInfoDao.updateBoardInfo" parameterClass="wcBoardInfoVO">
+	 	/*baseBossBoardInfoDao.updateBoardInfo*/
+		<![CDATA[
+    			UPDATE WC_BOARD_INFO SET
+    				 BOARD_NM  	 = #boardNm#
+    				,BOARD_GRP 	 = #boardGrp#
+    				,BOARD_TYPE	 = #boardType#
+    				,BOARD_SKIN	 = #boardSkin#
+    				,BOARD_TBL	 = #boardTbl#
+    				,AUTH_WRITER = #authWriter#
+    				,AUTH_READER = #authReader#
+    				,AUTH_NOTICE = #authNotice#
+    				,AUTH_ANSWER = #authAnswer#
+    				,AUTH_MEMO	 = #authMemo#
+    				,SECRET_USE  = #secretUse#
+    				,EDITOR_USE  = #editorUse#
+    				,ITEM_USE    = #itemUse#
+    				,FILE_NUM    = #fileNum#
+    				,FILE_SIZE   = #fileSize#
+    				,FILE_ALW_EXT= #fileAlwExt#
+    				,NEWICON_DAY = #newiconDay#
+    				,ITEMS		 = #items#
+    				,ROW_CNT	 = #rowCnt#
+    				,PAGE_CNT	 = #pageCnt#
+    				,LANG_TYPE	 = #langType#
+    				,TOP_HTML	 = #topHtml#
+    				,BOTTOM_HTML = #bottomHtml#
+    				,MODI_ID	 = #modiId#
+    				,MODI_DTM	 = NOW() 
+    			WHERE 1=1
+    			AND BOARD_ID  = #boardId#
+    	]]> 
+	</update>
+	
+	<select id="baseBossBoardInfoDao.selectNextId" parameterClass="wcBoardInfoVO" resultClass="java.lang.String" >
+		/*baseBossBoardInfoDao.selectNextId*/
+ 		<![CDATA[
+			SELECT CONCAT('BRD', LPAD(IFNULL(MAX(CAST(RIGHT(a.BOARD_ID, 3) AS UNSIGNED)), 0) + 1, 4, '0')) 
+			  FROM WC_BOARD_INFO a			
+ 		]]>
+ 	</select>
+ 	
+ 	<delete id="baseBossBoardInfoDao.deleteBoardInfoTbl" parameterClass="wcBoardInfoVO">
+ 		/*baseBossBoardInfoDao.deleteBoardInfoTbl*/
+			DELETE FROM $boardTable$ 	 WHERE BOARD_ID	= #boardId#
+	</delete>
+	
+	<delete id="baseBossBoardInfoDao.deleteBoardFileInfo" parameterClass="wcBoardInfoVO">
+		/*baseBossBoardInfoDao.deleteBoardFileInfo*/
+			DELETE FROM $boardFileTable$ WHERE BOARD_ID	= #boardId#
+	</delete>
+	
+	<delete id="baseBossBoardInfoDao.deleteBoardInfo" parameterClass="wcBoardInfoVO">
+		/*baseBossBoardInfoDao.deleteBoardInfo*/
+    		DELETE FROM WC_BOARD_INFO WHERE  BOARD_ID = #boardId#
+	</delete>
+	
+	<delete id="baseBossBoardInfoDao.deleteBoardCmmtAllData" parameterClass="wcBoardInfoVO">
+		/*baseBossBoardInfoDao.deleteBoardCmmtAllData*/
+    		DELETE FROM WC_BOARD_CMMT WHERE IDX IN (SELECT a.IDX FROM WC_BOARD_TXT a WHERE  a.BOARD_ID = #boardId#)
+	</delete>
+	
+	<select id="baseBossBoardInfoDao.selectBoardFileData" parameterClass="wcBoardInfoVO" resultClass="egovMap">
+		/*baseBossBoardInfoDao.selectBoardFileData*/
+	 	 SELECT FIDX,IDX,FILE_SAVE_NM,FILE_REAL_NM,FILE_SIZE,DOWN_CNT,FILE_PATH,FILE_TYPE
+	 	 FROM  $boardFileTable$
+	 	 WHERE BOARD_ID 	= #boardId#
+	</select>
+	
+	<update id="baseBossBoardUserDao.updateBoardView" parameterClass="wcBoardTxtVo">
+		/*baseBossBoardUserDao.updateBoardView*/
+	 	 	UPDATE $boardTable$ SET
+	 	 		  VISITED = VISITED+1
+	 	   WHERE IDX 	= #idx#
+	 	   AND BOARD_ID = #boardId#
+	 </update>
+	 
+	 <delete id="baseBossBoardUserDao.deleteBoardFileData" parameterClass="wcBoardFileVO">
+	 	/*baseBossBoardUserDao.deleteBoardFileData*/
+	 	 DELETE FROM $boardFileTable$ 
+	 	 WHERE IDX 		= #idx#
+	 	 AND BOARD_ID 	= #boardId#
+	 	 <isNotEqual prepend="AND" property="fidx" compareValue="0">
+	 	 FIDX 			= #fidx#
+		 </isNotEqual>
+	 	
+	 </delete> 
+	 
+	<select id="baseBossBoardUserDao.selectBoardLatest" parameterClass="wcBoardTxtVo" resultClass="egovMap">
+		/*baseBossBoardUserDao.selectBoardLatest*/
+		SELECT IDX
+	   		  ,TITLE 
+	   		  ,REGI_DTM
+	    FROM $boardTable$
+	    WHERE
+	    BOARD_ID		= #boardId#
+	    AND RE_LEVEL	= 0
+	    ORDER BY RE_REF ASC,RE_STEP ASC 
+	    LIMIT 0, #latestCnt#
+	 </select>
+	 
+	 <select id="baseBossBoardUserDao.selectPhotoLatest" parameterClass="wcBoardTxtVo" resultClass="egovMap">
+	 	/*baseBossBoardUserDao.selectPhotoLatest*/
+	   	SELECT IDX
+	   		  ,TITLE 
+	   		  ,REGI_DTM
+	   		  ,CONTENTS
+	   		  ,(SELECT SAVE_NAME FROM $boardFileTable$ WHERE IDX=a.IDX AND BOARD_ID=#boardId# ORDER BY FIDX ASC LIMIT 0,1) AS SAVE_NAME 
+	    FROM $boardTable$ a
+	    WHERE
+	    BOARD_ID		= #boardId#
+	    AND RE_LEVEL	= 0
+	    ORDER BY RE_REF ASC,RE_STEP ASC 
+	    LIMIT 0, #latestCnt# 
+	 </select>
+	 
+	 <!-- RE_STEP 버그 수정 재귀쿼리로 하위 STEP까지 조회한 값으로 변경 -->
+	 <select id="baseBossBoardUserDao.getBoardStepRe" parameterClass="wcBoardTxtVo" resultClass="egovMap">
+	 	/*baseBossBoardUserDao.getBoardStepRe*/
+	 	 WITH RECURSIVE CTE AS (
+ 
+		 	SELECT PIDX, IDX, RE_STEP
+		 		FROM WC_BOARD_TXT 
+		 			WHERE IDX=#pidx#
+		 	UNION ALL
+		 	
+		 	SELECT A.PIDX, A.IDX, A.RE_STEP
+		 		FROM WC_BOARD_TXT A
+		 	INNER JOIN CTE ON  A.PIDX = CTE.IDX
+		 )
+		 
+	 	 SELECT  RE_REF AS reRef
+	 	 		,RE_LEVEL+1 AS reLevel
+	 	 		,(SELECT IF(MAX(RE_STEP) IS NULL,a.RE_STEP+1,MAX(RE_STEP)+1) 
+	 	 			FROM CTE) AS reStep
+	 	 FROM $boardTable$ a
+	 	 WHERE BOARD_ID = #boardId#
+	 	 	   AND IDX  = #pidx#
+	 </select>
+	 
+	 <update id="baseBossBoardUserDao.updateBoardStep" parameterClass="wcBoardTxtVo">
+	 	/*baseBossBoardUserDao.updateBoardStep*/
+		UPDATE $boardTable$ SET RE_STEP = RE_STEP+1 
+		WHERE
+		BOARD_ID = #boardId# 
+		AND RE_REF	 = #reRef#
+		AND RE_STEP <![CDATA[>=]]> #reStep#
+	</update>
+	
+	<update id="baseBossBoardUserDao.minusBoardStep" parameterClass="wcBoardTxtVo">
+		/*baseBossBoardUserDao.minusBoardStep*/
+		UPDATE $boardTable$ SET RE_STEP = RE_STEP-1 
+		WHERE BOARD_ID = #boardId# 
+		AND RE_REF = (SELECT RE_STEP FROM (SELECT RE_REF FROM $boardTable$ WHERE IDX=#idx#) TMP1)
+		AND RE_STEP <![CDATA[>]]>  (SELECT RE_STEP FROM (SELECT RE_STEP FROM $boardTable$ WHERE IDX=#idx#) TMP2)
+	</update>
+	
+	 <select id="baseBossBoardUserDao.getBoardStep" parameterClass="wcBoardTxtVo" resultClass="egovMap">
+	 	/*baseBossBoardUserDao.getBoardStep*/
+	 	 SELECT IF(MIN(RE_REF) IS NULL,-1,MIN(RE_REF)-1) AS reRef
+	 	 		,0 AS reLevel
+	 	 		,0 AS reStep
+	 	 		,0 AS pidx
+	 	 FROM $boardTable$
+	 	 WHERE BOARD_ID = #boardId#
+	 </select>
+	 
+	 <select id="baseBossBoardUserDao.selectBoardFileDownData" parameterClass="wcBoardFileVO" resultClass="egovMap">
+	 	/*baseBossBoardUserDao.selectBoardFileDownData*/
+	 	 SELECT FIDX,IDX,FILE_SAVE_NM,FILE_REAL_NM,FILE_SIZE,DOWN_CNT,FILE_PATH,FILE_TYPE
+	 	 FROM  $boardFileTable$
+	 	 WHERE
+	 	 IDX 			= #idx#
+	 	 AND BOARD_ID 	= #boardId#
+	 	 AND FIDX		= #fidx#
+	 </select>
+	 
+	<select id="baseBossBoardUserDao.selectBoardNoticeList" parameterClass="wcBoardTxtVo" resultClass="egovMap">
+		/*baseBossBoardUserDao.selectBoardNoticeList*/
+	 	 	SELECT IDX
+	 	 		  ,WRITER
+	 	 		  ,NAME
+	 	 		  ,TITLE
+	 	 		  ,CNTS
+	 	 		  ,CNTS_SEARCH
+	 	 		  ,VISITED
+	 	 		  ,SECRET
+	 	 		  ,ICON
+	 	 		  ,ITEMS
+	 	 		  ,DATE_FORMAT(REGI_DTM, "%Y-%m-%d") AS REGI_DTM
+	 	 		  ,ETC1
+	 	 		  ,ETC2 
+	 	 		  ,VIEW_YN
+	 	 		  ,(SELECT COUNT(*) FROM $boardFileTable$ WHERE IDX=IDX) AS FCNT
+	 	 	FROM $boardTable$
+	 	 	WHERE BOARD_ID = #boardId#
+	 	 	AND NOTICE = 'Y'
+	 	 	<isNotEmpty prepend="AND" property="siteId">
+		 	 	 SITE_ID = #siteId#
+		 	 </isNotEmpty>
+	 	 	AND (ETC1 != 'comment' OR ETC1 IS NULL)
+			ORDER BY RE_REF ASC, RE_STEP ASC		  
+	 </select>
+	   
+	 <select id="baseBossBoardUserDao.selectBoardMaxSortSeq" parameterClass="wcBoardTxtVo" resultClass="java.lang.Integer">
+	 	/*baseBossBoardUserDao.selectBoardMaxSortSeq*/
+	 	  SELECT IFNULL(MAX(SORT_SEQ) + 1, 1)  
+	 	 	FROM $boardTable$
+	 	 	WHERE BOARD_ID = #boardId#
+	 </select>
+	 
+	 <select id="baseBossBoardUserDao.selectBoardNextSortSeq" parameterClass="wcBoardTxtVo" resultClass="java.lang.Integer">
+	 	/*baseBossBoardUserDao.selectBoardNextSortSeq*/
+	 	  SELECT IFNULL(MIN(SORT_SEQ), #sortSeq# ) AS SORT_SEQ
+	 	 	FROM WC_BOARD_TXT
+	 	 	WHERE BOARD_ID = #boardId#
+	 	 	<isNotEmpty prepend="" property="searchGid">
+	 	  		<isNotEqual prepend="AND" property="searchGid" compareValue="전체">
+	 	  			ITEMS LIKE CONCAT('%',#searchGid#,'%')
+	 	  		</isNotEqual>
+	 	  	</isNotEmpty>
+	 	 	<![CDATA[
+	 	 	  AND SORT_SEQ > #sortSeq#
+	 	 	 ]]>
+	 </select>
+	 
+	 <select id="baseBossBoardUserDao.selectBoardPrevSortSeq" parameterClass="wcBoardTxtVo" resultClass="java.lang.Integer">
+	 	/*baseBossBoardUserDao.selectBoardPrevSortSeq*/
+	 	  SELECT IFNULL(MAX(SORT_SEQ), #sortSeq#) AS SORT_SEQ  
+	 	 	FROM WC_BOARD_TXT
+	 	 	WHERE BOARD_ID = #boardId#
+	 	 	<isNotEmpty prepend="" property="searchGid">
+	 	  		<isNotEqual prepend="AND" property="searchGid" compareValue="전체">
+	 	  			ITEMS LIKE CONCAT('%',#searchGid#,'%')
+	 	  		</isNotEqual>
+	 	  	</isNotEmpty>
+	 	 	<![CDATA[
+	 	 	  AND SORT_SEQ < #sortSeq#
+	 	 	 ]]>
+	 </select>
+	  
+	 <select id="baseBossBoardUserDao.selectBoardDataCnt" parameterClass="wcBoardTxtVo" resultClass="java.lang.Integer">
+	 	/*baseBossBoardUserDao.selectBoardDataCnt*/
+	 	 SELECT COUNT(*) 
+	 	 	FROM $boardTable$ a
+	 	 	WHERE a.BOARD_ID = #boardId#
+	 	 	AND (a.ETC1 != 'comment' OR a.ETC1 IS NULL)
+	 	 <isNotEmpty prepend="AND" property="viewYn">
+		 	 	a.VIEW_YN = #viewYn#
+		 </isNotEmpty>
+ 	 	 <isEmpty prepend="AND" property="notice">
+	 	 	 a.NOTICE!='Y'
+	 	 </isEmpty>
+	 	 <isNotEmpty prepend="AND" property="siteId">
+	 	 	 a.SITE_ID = #siteId#
+	 	 </isNotEmpty>
+	 	 <isNotEmpty prepend="AND" property="regiId">
+	 	 	 a.REGI_ID = #regiId#
+	 	 </isNotEmpty>
+	 	 <isNotEmpty prepend="" property="searchGid">
+ 	  		<isNotEqual prepend="AND" property="searchGid" compareValue="전체">
+ 	  			a.ITEMS LIKE CONCAT('%',#searchGid#,'%')
+ 	  		</isNotEqual>
+ 	  	 </isNotEmpty>
+ 	  	 <isNotEmpty property="sDate">
+		   <isNotEqual prepend="AND" property="eDate" compareValue="">
+		            a.REGI_DTM BETWEEN DATE(#sDate#) AND adddate(DATE(#eDate#),1)
+		   </isNotEqual>
+		 </isNotEmpty>
+	 	 <include refid="baseBossBoardUserDao.listWhereClause"/>
+	 </select>
+	 
+	  <select id="baseBossBoardUserDao.selectBoardDataList" parameterClass="wcBoardTxtVo" resultClass="egovMap">
+	  	/*baseBossBoardUserDao.selectBoardDataList*/
+	 	 	SELECT a.IDX
+	 	 		  ,a.WRITER 
+	 	 		  ,a.NAME
+	 	 		  ,a.TITLE
+	 	 		  ,a.CNTS
+	 	 		  ,a.CNTS_SEARCH
+	 	 		  ,a.VISITED
+	 	 		  ,a.SECRET 
+	 	 		  ,a.ICON
+	 	 		  ,a.ITEMS
+	 	 		  ,a.SORT_SEQ
+	 	 		  ,a.RE_REF
+	 	 		  ,a.RE_LEVEL
+	 	 		  ,a.RE_STEP
+	 	 		  ,DATE_FORMAT(a.REGI_DTM, "%Y-%m-%d") AS REGI_DTM
+	 	 		  ,a.REGI_ID
+	 	 		  ,a.ETC1
+	 	 		  ,a.ETC2 
+	 	 		  ,(SELECT COUNT(*) FROM $boardFileTable$ WHERE IDX=a.IDX) AS FCNT
+	 	 		  ,(SELECT FILE_SAVE_NM FROM $boardFileTable$ WHERE IDX=a.IDX ORDER BY FIDX ASC LIMIT 0,1) AS SNAME
+	 	 		  ,(SELECT COUNT(*) FROM $boardTable$ WHERE PIDX=a.IDX AND (ETC1 != 'comment' OR ETC1 IS NULL)) AS RE_CNT
+	 	 		  ,(SELECT COUNT(*) FROM $boardTable$ WHERE PIDX=a.IDX AND ETC1 = 'comment') AS COM_CNT
+	 	 		  ,a.SITE_ID
+	 	 		  ,a.VIEW_YN
+	 	 		  ,a.FS_YEAR
+	 	 		  ,a.FS_DVSN1
+	 	 		  ,a.FS_DVSN2
+	 	 	FROM $boardTable$ a
+	 	 	WHERE a.BOARD_ID = #boardId#
+	 	 	AND (a.ETC1 != 'comment' OR a.ETC1 IS NULL)
+	 	 	<isNotEmpty prepend="AND" property="viewYn">
+		 	 	a.VIEW_YN = #viewYn#
+		 	</isNotEmpty> 
+	 	 	<isEmpty prepend="AND" property="notice">
+		 	 	 a.NOTICE!='Y'
+		 	</isEmpty>
+	 	  	<isNotEmpty prepend="AND" property="siteId">
+		 	 	 a.SITE_ID = #siteId#
+		 	 </isNotEmpty>
+	 	  	<isNotEmpty prepend="AND" property="regiId">
+		 	 	 a.REGI_ID = #regiId#
+		 	 </isNotEmpty>
+	 	  	<isNotEmpty prepend="" property="searchGid">
+	 	  		<isNotEqual prepend="AND" property="searchGid" compareValue="전체">
+	 	  			a.ITEMS LIKE CONCAT('%',#searchGid#,'%')
+	 	  		</isNotEqual>
+	 	  	</isNotEmpty>
+	 	  	<isNotEmpty property="sDate">
+			   <isNotEqual prepend="AND" property="eDate" compareValue="">
+			         a.REGI_DTM BETWEEN DATE(#sDate#) AND adddate(DATE(#eDate#),1)
+			   </isNotEqual>
+			</isNotEmpty>
+	 	 	<include refid="baseBossBoardUserDao.listWhereClause"/>
+			<isNotEmpty property="orderItem">
+				ORDER BY $orderItem$ $sortType$
+			</isNotEmpty>
+			<isEmpty property="orderItem">
+				ORDER BY a.RE_REF ASC, a.RE_STEP ASC
+			</isEmpty>
+	 	 	LIMIT  #recordCountPerPage# OFFSET #firstIndex#
+
+	 </select>
+	 
+	 <select id="baseBossBoardUserDao.selectBoardData" parameterClass="wcBoardTxtVo" resultClass="egovMap">
+	 	/*baseBossBoardUserDao.selectBoardData*/
+	 	 	SELECT IDX
+	 	 		  ,BOARD_ID
+	 	 		  ,SITE_ID
+	 	 		  ,WRITER
+	 	 		  ,NAME
+	 	 		  ,PASS
+	 	 		  ,TITLE
+	 	 		  ,CNTS
+	 	 		  ,CNTS_SEARCH
+	 	 		  ,RE_REF
+	 	 		  ,RE_LEVEL
+	 	 		  ,RE_STEP
+	 	 		  ,USER_IP 
+	 	 		  ,VISITED
+	 	 		  ,DEL_NUM
+	 	 		  ,NOTICE
+	 	 		  ,SECRET
+	 	 		  ,EDITOR
+	 	 		  ,ICON
+	 	 		  ,ITEMS
+	 	 		  ,DATE_FORMAT(a.REGI_DTM, "%Y-%m-%d") AS REGI_DTM
+	 	 		  ,ETC1
+	 	 		  ,ETC2
+	 	 		  ,REGI_ID
+	 	 		  ,VIEW_YN
+	 	 		  ,FS_YEAR
+	 	 		  ,FS_DVSN1
+	 	 		  ,FS_DVSN2
+	 	 		  ,(SELECT COUNT(*) FROM $boardTable$ WHERE PIDX=a.IDX AND (ETC1 != 'comment' OR ETC1 IS NULL)) AS RE_CNT
+	 	 	FROM $boardTable$ a
+	 	 	WHERE IDX = #idx#	
+	 	 	AND BOARD_ID = #boardId# 	
+	 </select>
+	 
+	 <select id="baseBossBoardUserDao.selectBoardCommentList" parameterClass="wcBoardTxtVo" resultClass="egovMap">
+	 	/*baseBossBoardUserDao.selectBoardCommentList*/
+	 	 	SELECT IDX
+	 	 		  ,BOARD_ID
+	 	 		  ,SITE_ID
+	 	 		  ,WRITER
+	 	 		  ,NAME
+	 	 		  ,PASS
+	 	 		  ,TITLE
+	 	 		  ,CNTS
+	 	 		  ,CNTS_SEARCH
+	 	 		  ,RE_REF
+	 	 		  ,RE_LEVEL
+	 	 		  ,RE_STEP
+	 	 		  ,USER_IP
+	 	 		  ,VISITED
+	 	 		  ,DEL_NUM
+	 	 		  ,NOTICE
+	 	 		  ,SECRET
+	 	 		  ,EDITOR
+	 	 		  ,ICON
+	 	 		  ,ITEMS
+	 	 		  ,REGI_DTM
+	 	 		  ,ETC1
+	 	 		  ,ETC2
+	 	 	FROM $boardTable$ a
+	 	 	WHERE BOARD_ID = #boardId#
+	 	 	AND ETC1 ='comment'
+	 	 	AND PIDX = #idx#
+	 	 	<include refid="baseBossBoardUserDao.listWhereClause"/>
+			ORDER BY RE_REF ASC,RE_STEP ASC			  
+	 </select> 
+	 
+	 <!-- 게시글의 이전글 또는 다음글  조회 -->
+ 	<select id="baseBossBoardUserDao.selectNextBoardData" parameterClass="wcBoardTxtVo" resultClass="egovMap">
+ 		/*baseBossBoardUserDao.selectNextBoardData*/
+ 		SELECT 	IDX
+	 	 		  ,BOARD_ID
+	 	 		  ,SITE_ID
+	 	 		  ,WRITER
+	 	 		  ,NAME
+	 	 		  ,PASS
+	 	 		  ,TITLE
+	 	 		  ,CNTS
+	 	 		  ,CNTS_SEARCH
+	 	 		  ,RE_REF
+	 	 		  ,RE_LEVEL
+	 	 		  ,RE_STEP
+	 	 		  ,USER_IP
+	 	 		  ,VISITED
+	 	 		  ,DEL_NUM
+	 	 		  ,NOTICE
+	 	 		  ,SECRET
+	 	 		  ,EDITOR
+	 	 		  ,ICON
+	 	 		  ,ITEMS
+	 	 		  ,REGI_DTM
+	 	 		  ,ETC1
+	 	 		  ,ETC2
+ 		FROM 	$boardTable$
+ 		WHERE 	 BOARD_ID		= #boardId#
+		AND		RE_LEVEL = 0
+        <isNotEmpty prepend="AND" property="siteId">
+        	SITE_ID = #siteId#
+        </isNotEmpty>
+ 		<isEqual property="sortType" compareValue="Previous">
+ 		<![CDATA[	AND		RE_REF 	>= #reRef#	AND !(RE_REF = #reRef# AND RE_STEP <= #reStep#) ]]>
+ 		</isEqual>
+ 		<isEqual property="sortType" compareValue="Next">
+ 		<![CDATA[	AND		RE_REF 	<= #reRef#	AND !(RE_REF = #reRef# AND RE_STEP >= #reStep#)]]>
+ 		</isEqual>
+ 		AND		IDX		!= 	#idx#
+ 		AND		NOTICE	= 	#notice#
+ 		<isEmpty property="orderItem">
+			<![CDATA[	ORDER BY NOTICE desc, RE_REF asc,RE_STEP asc	]]>
+		</isEmpty>
+		<isNotEmpty property="orderItem">
+			<![CDATA[	ORDER BY $orderItem$ 	]]>
+		</isNotEmpty>
+ 		LIMIT  1 OFFSET 0
+ 	</select>
+	 
+	 <select id="baseBossBoardUserDao.selectBoardFileData" parameterClass="wcBoardTxtVo" resultClass="egovMap">
+	 	/*baseBossBoardUserDao.selectBoardFileData*/
+	 	 SELECT FIDX,IDX,FILE_SAVE_NM,FILE_REAL_NM,FILE_SIZE,DOWN_CNT,FILE_PATH,FILE_EXT,FILE_TYPE
+	 	 FROM  $boardFileTable$
+	 	 WHERE
+	 	 IDX 			= #idx#
+	 	 AND BOARD_ID 	= #boardId#
+	 </select>
+	 
+	 <select id="baseBossBoardUserDao.selectBoardReList" parameterClass="byte" resultClass="egovMap">
+	 	/*baseBossBoardUserDao.selectBoardReList*/
+ 			SELECT	IDX
+	 	 		   ,BOARD_ID
+	 	 		   ,SITE_ID
+	 	 		   ,WRITER
+	 	 		   ,NAME
+	 	 		   ,PASS
+	 	 		   ,TITLE
+	 	 		   ,CNTS
+	 	 		   ,CNTS_SEARCH
+	 	 		   ,RE_REF
+	 	 		   ,RE_LEVEL
+	 	 		   ,RE_STEP
+	 	 		   ,USER_IP 
+	 	 		   ,VISITED
+	 	 		   ,DEL_NUM
+	 	 		   ,NOTICE
+	 	 		   ,SECRET
+	 	 		   ,EDITOR
+	 	 		   ,ICON
+	 	 		   ,ITEMS
+	 	 		   ,REGI_DTM
+	 	 		   ,ETC1
+	 	 		   ,ETC2
+	 	 		   ,REGI_ID
+			FROM 	WC_BOARD_TXT
+			WHERE 	BOARD_ID	=	#boardId#
+			AND		PIDX = #pidx#
+			AND		RE_REF =	#reRef#
+			AND		RE_LEVEL > 0
+ 	</select> 
+	  
+	 <insert id="baseBossBoardUserDao.insertBoardData" parameterClass="wcBoardTxtVo">
+	 	/*baseBossBoardUserDao.insertBoardData*/
+	 	 INSERT INTO $boardTable$ SET
+	 	 		   PIDX			= #pidx#
+	 	 		  ,BOARD_ID 	= #boardId#
+	 	 		  ,SITE_ID 		= #siteId#
+	 	 		  ,WRITER		= #writer#
+	 	 		  ,NAME			= #name#
+	 	 		  ,PASS			= #pass#
+	 	 		  ,TITLE		= #title#
+	 	 		  ,CNTS			= #cnts#
+	 	 		  ,CNTS_SEARCH	= #cntsSearch#
+	 	 		  ,RE_REF		= #reRef#
+	 	 		  ,RE_LEVEL 	= #reLevel#
+	 	 		  ,RE_STEP		= #reStep#
+	 	 		  ,USER_IP		= #userIp#
+	 	 		  ,VISITED		= #visited#
+	 	 		  ,DEL_NUM		= #delNum#
+	 	 		  ,NOTICE		= #notice#
+	 	 		  ,SECRET		= #secret#
+	 	 		  ,EDITOR		= #editor#
+	 	 		  ,ICON			= #icon#
+	 	 		  ,SORT_SEQ		= #sortSeq#
+	 	 		  ,ITEMS		= #items#
+	 	 		  ,REGI_ID		= #regiId#
+	 	 		  ,REGI_DTM		= NOW()
+	 	 		  ,ETC1			= #etc1#
+	 	 		  ,ETC2			= #etc2#
+	 	 		  ,VIEW_YN		= #viewYn#
+	 	 		  ,FS_YEAR		= #fsYear#
+	 	 		  ,FS_DVSN1		= #fsDvsn1#
+	 	 		  ,FS_DVSN2		= #fsDvsn2#
+	 	 <selectKey resultClass="java.lang.Integer" keyProperty="idx">
+		        SELECT LAST_INSERT_ID()
+		 </selectKey>
+	 </insert> 
+	 
+	 <insert id="baseBossBoardUserDao.insertBoardFileData" parameterClass="wcBoardFileVO">
+	 	/*baseBossBoardUserDao.insertBoardFileData*/
+	 	 INSERT INTO $boardFileTable$ SET
+	 	 		   IDX 		= #idx#
+	 	 		  ,SITE_ID	= #siteId#
+	 	 		  ,FILE_SAVE_NM= #fileSaveNm#
+	 	 		  ,FILE_REAL_NM= #fileRealNm#
+	 	 		  ,FILE_PATH	= #filePath#
+	 	 		  ,FILE_SIZE= #fileSize#
+	 	 		  ,FILE_EXT= #fileExt#
+	 	 		  ,FILE_TYPE= #fileType#
+	 	 		  ,DOWN_CNT = 0
+	 	 		  ,BOARD_ID = #boardId#
+	 	 		  ,REGI_DTM	= NOW()
+	 	 		  ,REGI_ID = #regiId#
+	 	 	<selectKey resultClass="java.lang.Integer" keyProperty="fidx">
+		        SELECT LAST_INSERT_ID()
+		 	</selectKey>
+	 </insert>
+	 
+	 <update id="baseBossBoardUserDao.updateBoardData" parameterClass="wcBoardTxtVo">
+	 	/*baseBossBoardUserDao.updateBoardData*/
+	 	 	UPDATE $boardTable$ SET
+	 	 		   PASS			= #pass#
+	 	 		  ,TITLE		= #title#
+	 	 		  ,CNTS			= #cnts#
+	 	 		  ,CNTS_SEARCH	= #cntsSearch#
+	 	 		  ,USER_IP		= #userIp#
+	 	 		 <isNotEmpty prepend="," property="notice">
+	 	 		 	NOTICE		= #notice#
+	 	 		 </isNotEmpty>
+	 	 		  ,SECRET		= #secret#
+	 	 		  ,EDITOR		= #editor#
+	 	 		  ,ITEMS		= #items#
+	 	 		  ,MODI_ID		= #modiId#
+	 	 		  ,MODI_DTM		= NOW()
+	 	 		  ,ETC1			= #etc1#
+	 	 		  ,ETC2			= #etc2#
+	 	 		 <isNotEmpty prepend="," property="viewYn">
+	 	 		 	VIEW_YN		= #viewYn#
+	 	 		 </isNotEmpty>
+	 	 		 <isNotEmpty prepend="," property="fsYear">
+	 	 		 	FS_YEAR		= #fsYear#
+	 	 		 </isNotEmpty>
+	 	 		 <isNotEmpty prepend="," property="fsDvsn1">
+	 	 		 	FS_DVSN1		= #fsDvsn1#
+	 	 		 </isNotEmpty>
+	 	 		 <isNotEmpty prepend="," property="fsDvsn2">
+	 	 		 	FS_DVSN2		= #fsDvsn2#
+	 	 		 </isNotEmpty>
+	 	   WHERE IDX 	= #idx# 
+	 	   AND BOARD_ID = #boardId#
+	 </update>
+	 
+	 <update id="baseBossBoardUserDao.updateReSortSeq" parameterClass="wcBoardTxtVo">
+	 	/*baseBossBoardUserDao.updateReSortSeq*/
+	 	 UPDATE WC_BOARD_TXT SET
+			  	SORT_SEQ	= #chnSeq#
+		  WHERE BOARD_ID = #boardId#
+		  <isNotEmpty prepend="" property="searchGid">
+	 	  		<isNotEqual prepend="AND" property="searchGid" compareValue="전체">
+	 	  			ITEMS LIKE CONCAT('%',#searchGid#,'%')
+	 	  		</isNotEqual>
+	 	  </isNotEmpty>
+		  <isNotEmpty prepend="AND" property="idx">
+		  	IDX = #idx#
+		  </isNotEmpty>
+		  <isNotEmpty prepend="AND" property="sortSeq">
+		  	SORT_SEQ = #sortSeq#
+		  </isNotEmpty>
+	 </update> 
+	 
+	 <update id="baseBossBoardUserDao.updateMyChkYn" parameterClass="wcBoardTxtVo">
+	 	/*baseBossBoardUserDao.updateMyChkYn*/
+	 	 UPDATE WC_BOARD_TXT SET
+			  	MY_CHK_YN	= #myChkYn#
+		  WHERE BOARD_ID = #boardId#
+		  	AND IDX = #idx#
+	 </update>
+	 
+	 <delete id="baseBossBoardUserDao.deleteBoardData" parameterClass="wcBoardTxtVo">
+	 	/*baseBossBoardUserDao.deleteBoardData*/
+	 	 DELETE FROM $boardTable$ 
+	 	 WHERE IDX 		= #idx#
+	 	 AND BOARD_ID 	= #boardId#
+	 </delete>
+	 
+	 <select id="baseBossBoardUserDao.selectBoardFileListBySiteId" parameterClass="wcBoardTxtVo" resultClass="egovMap">
+	 	/*baseBossBoardUserDao.selectBoardFileListBySiteId*/
+	 	 SELECT FIDX,IDX,FILE_SAVE_NM,FILE_REAL_NM,FILE_SIZE,DOWN_CNT,FILE_PATH,FILE_EXT
+	 	 FROM  WC_BOARD_FILE
+	 	 WHERE 1=1
+	 	 AND SITE_ID 	= #siteId#
+	 </select>
+	 
+	 <select id="baseBossBoardUserDao.selectBoardSearchCnt" parameterClass="wcBoardTxtVo" resultClass="java.lang.Integer">
+	 	/*baseBossBoardUserDao.selectBoardSearchCnt*/
+		 	 	SELECT 	COUNT(*) AS CNT
+		 	 	  FROM   WC_BOARD_TXT a 
+		 	 LEFT JOIN 	 WC_SYS_MENU b 
+		 	 	    ON 	 a.BOARD_ID 	= 	b.BOARD_ID
+		 	 LEFT JOIN 	 WC_BOARD_INFO c
+ 		 	 	    ON 	 a.BOARD_ID 	= 	c.BOARD_ID
+				 WHERE 	 (
+	 	 				 a.TITLE LIKE CONCAT('%',#sw#,'%')
+	 	 			OR 	 a.CNTS_SEARCH LIKE CONCAT('%',#sw#,'%')
+	 	 			OR   a.NAME LIKE CONCAT('%',#sw#,'%')
+	 	   				 )
+	 	   		   AND	 b.SITE_ID 		= 	#siteId#
+				   AND 	 b.USE_YN		=	'Y' 
+				   AND 	 b.MENU_TGT		=	'0010'
+				   AND 	 b.MENU_TYPE	=	'0020'
+	 </select>
+	 
+	 <select id="baseBossBoardUserDao.selectBoardSearchList" parameterClass="wcBoardTxtVo" resultClass="egovMap">
+	 	/*baseBossBoardUserDao.selectBoardSearchList*/
+	 	 	SELECT 	  
+		 	 		   	 a.IDX
+		 	 		   	,a.BOARD_ID
+		 	 		  	,a.TITLE
+		 	 		  	,a.CNTS
+		 	 		  	,a.CNTS_SEARCH
+		 	 		  	,DATE_FORMAT(a.REGI_DTM, "%Y-%m-%d") AS REGI_DTM
+		 	 		  	,b.MENU_SEQ
+		 	 		  	,b.MENU_NM
+		 	 		  	,c.BOARD_NM
+		 	 	  FROM 	 WC_BOARD_TXT a 
+		 	 LEFT JOIN 	 WC_SYS_MENU b 
+		 	 	    ON 	 a.BOARD_ID 	= 	b.BOARD_ID
+		 	 LEFT JOIN 	 WC_BOARD_INFO c
+ 		 	 	    ON 	 a.BOARD_ID 	= 	c.BOARD_ID
+				 WHERE 	 
+				 	(
+				 	<isNotEmpty property="sv">
+				 		<isEqual property="sv" compareValue="title">
+		 	 				 a.TITLE LIKE CONCAT('%',#sw#,'%')				 			
+				 		</isEqual>
+				 	</isNotEmpty>
+				 	<isNotEmpty property="sv">
+				 		<isEqual property="sv" compareValue="cntsSearch">
+		 	 				 a.CNTS_SEARCH LIKE CONCAT('%',#sw#,'%') 			
+				 		</isEqual>
+				 	</isNotEmpty>
+				 	<isNotEmpty property="sv">
+				 		<isEqual property="sv" compareValue="all">
+		 	 				 	a.TITLE LIKE CONCAT('%',#sw#,'%')	
+		 	 				OR	 a.CNTS_SEARCH LIKE CONCAT('%',#sw#,'%')
+				 		</isEqual>
+				 	</isNotEmpty>
+	 	 			OR   a.NAME LIKE CONCAT('%',#sw#,'%')
+	 	   				 )
+	 	   		   AND	 b.SITE_ID 		= 	#siteId#
+				   AND 	 b.USE_YN		=	'Y' 
+				   AND 	 b.MENU_TGT		=	'0010'
+				   AND 	 b.MENU_TYPE	=	'0020'
+				   AND	 a.VIEW_YN 		= 	'Y'
+			ORDER BY a.RE_REF ASC, a.RE_STEP ASC
+	 	 	LIMIT  #recordCountPerPage# OFFSET #firstIndex#
+	 </select>
+	 
+	 
+	 <select id="baseBossBoardUserDao.selectNewsListToMain" parameterClass="wcBoardTxtVo" resultClass="egovMap">
+	 	/*baseBossBoardUserDao.selectBoardSearchList*/
+	 	 	SELECT 	  
+		 	 		   	 a.TITLE
+		 	 		   	 , a.CNTS_SEARCH
+		 	 		   	 , DATE_FORMAT(a.REGI_DTM, '%Y-%m-%d') as REGI_DTM
+		 	 		   	 , a.idx
+		 	 	  FROM 	 WC_BOARD_TXT a 
+				 WHERE VIEW_YN = 'Y'
+				 	AND BOARD_ID = #boardId#
+			ORDER BY a.REGI_DTM DESC
+	 	 	LIMIT  3
+	 </select>
+	 
+	 
+</sqlMap>
