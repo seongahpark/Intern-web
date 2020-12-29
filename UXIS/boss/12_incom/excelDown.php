@@ -14,7 +14,7 @@ ob_start();
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
 <?
-$year = $_GET['year'];
+$year = substr($_GET['year'],0,4);
 $filename = "휴가신청_".$year; //GET값으로 연도 불러와 휴가신청_연도 형식으로 파일명 생성
 require_once "../common/config_www.php";
 header("Content-type:application/vnd.ms-excel");
